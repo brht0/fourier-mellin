@@ -17,14 +17,14 @@
 namespace py = pybind11;
 
 template<unsigned int Channels>
-cv::Mat numpy_to_mat(py::array_t<float> input) {
+cv::Mat numpy_to_mat(const py::array_t<float>& input) {
     py::buffer_info buf = input.request();
     cv::Mat mat(buf.shape[0], buf.shape[1], CV_32FC(Channels), (float*)buf.ptr);
     return mat;
 }
 
 template<>
-cv::Mat numpy_to_mat<0>(py::array_t<float> input){
+cv::Mat numpy_to_mat<0>(const py::array_t<float>& input){
     py::buffer_info buf = input.request();
     int type;
     int channels = buf.ndim == 3 ? buf.shape[2] : 1;
@@ -126,7 +126,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             auto matProcessed = fm.GetProcessImage(mat);
             return mat_to_numpy(matProcessed);
         }, "Process Image")
-        .def("register_image", [](const FourierMellin& fm, py::array_t<float> img0, py::array_t<float> img1) -> auto {
+        .def("register_image", [](const FourierMellin& fm, const py::array_t<float>& img0, const py::array_t<float>& img1) -> auto {
             auto mat0 = numpy_to_mat<0>(img0);
             auto mat1 = numpy_to_mat<0>(img1);
             auto[transformed, transform] = fm.GetRegisteredImage(mat0, mat1);
@@ -135,7 +135,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
     py::class_<FourierMellinContinuous>(m, "FourierMellinContinuous")
         .def(py::init<int, int>())
-        .def("register_image", [](FourierMellinContinuous& fm, py::array_t<float> img) -> auto {
+        .def("register_image", [](FourierMellinContinuous& fm, const py::array_t<float>& img) -> auto {
             auto mat0 = numpy_to_mat<0>(img);
             auto[transformed, transform] = fm.GetRegisteredImage(mat0);
             return std::make_tuple(mat_to_numpy(transformed), transform);
@@ -143,11 +143,11 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
     py::class_<FourierMellinWithReference>(m, "FourierMellinWithReference")
         .def(py::init<int, int>())
-        .def("set_reference", [](FourierMellinWithReference& fm, py::array_t<float> img) -> auto {
+        .def("set_reference", [](FourierMellinWithReference& fm, const py::array_t<float>& img) -> auto {
             auto mat = numpy_to_mat<0>(img);
             fm.SetReference(mat);
         }, "Set Reference")
-        .def("register_image", [](FourierMellinWithReference& fm, py::array_t<float> img) -> auto {
+        .def("register_image", [](FourierMellinWithReference& fm, const py::array_t<float>& img) -> auto {
             auto mat = numpy_to_mat<0>(img);
             auto[transformed, transform] = fm.GetRegisteredImage(mat);
             return std::make_tuple(mat_to_numpy(transformed), transform);
@@ -168,7 +168,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return PyLogPolarMap::ConvertFromLogPolarMap(polarMap);
     }, "Do something");
 
-    m.def("process_image", [](py::array_t<float> img, py::array_t<float> highPassFilter, py::array_t<float> apodizationWindow, PyLogPolarMap logPolarMap){
+    m.def("process_image", [](const py::array_t<float>& img, const py::array_t<float>& highPassFilter, const py::array_t<float>& apodizationWindow, PyLogPolarMap logPolarMap){
         auto logPolarMap2 = logPolarMap.ConvertToLogPolarMap();
         auto img2 = numpy_to_mat<1>(img);
         auto highPassFilter2 = numpy_to_mat<2>(highPassFilter);
@@ -177,7 +177,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return mat_to_numpy(logPolarImg);
     }, "Process Image");
 
-    m.def("register_image", [](py::array_t<float> img0, py::array_t<float> img1, py::array_t<float>logPolar0, py::array_t<float> logPolar1, PyLogPolarMap logPolarMap){
+    m.def("register_image", [](const py::array_t<float>& img0, const py::array_t<float>& img1, const py::array_t<float>& logPolar0, const py::array_t<float>& logPolar1, PyLogPolarMap logPolarMap){
         auto mat0 = numpy_to_mat<1>(img0);
         auto mat1 = numpy_to_mat<1>(img1);
         auto matLogPolar0 = numpy_to_mat<1>(logPolar0);
@@ -186,7 +186,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return registerGrayImage(mat0, mat1, matLogPolar0, matLogPolar1, logPolarMap2);
     }, "Register Images");
 
-    m.def("get_transformed", [](py::array_t<float> img, Transform transform){
+    m.def("get_transformed", [](const py::array_t<float>& img, Transform transform){
         auto mat = numpy_to_mat<3>(img);
         auto transformed = getTransformed(mat, transform);
         return mat_to_numpy(transformed);

@@ -4,9 +4,15 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
+#include <iomanip>
+#include <sstream>
+
 #ifndef MODULE_NAME
 #error "MODULE_NAME is not defined"
 #endif
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 namespace py = pybind11;
 
@@ -65,9 +71,20 @@ struct PyLogPolarMap{
     }
 };
 
+template <typename T>
+std::string to_string_with_precision(const T value, const int n=2){
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << value;
+    return std::move(out).str();
+}
+
 PYBIND11_MODULE(MODULE_NAME, m) {
     py::class_<Transform>(m, "Transform")
         .def(py::init<>())
+        .def("__repr__", [](const Transform& t){
+            return "<" TOSTRING(MODULE_NAME) ".Transform x_offset=" + to_string_with_precision(t.xOffset, 2) + ", y_offset=" + to_string_with_precision(t.yOffset, 2) + ", rotation=" + to_string_with_precision(t.rotation, 2) + ", scale=" + to_string_with_precision(t.scale, 2) + ", response=" + to_string_with_precision(t.response, 2) + ">";
+        })
         .def_readwrite("x_offset", &Transform::xOffset)
         .def_readwrite("y_offset", &Transform::yOffset)
         .def_readwrite("scale", &Transform::scale)
@@ -80,6 +97,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         .def_readwrite("log_base", &PyLogPolarMap::logBase)
         .def_readwrite("x_map", &PyLogPolarMap::xMap)
         .def_readwrite("y_map", &PyLogPolarMap::yMap);
+
+    py::class_<FourierMellin>(m, "FourierMellin")
+        .def(py::init<int, int>())
+        .def("process_image", [](const FourierMellin& fm, py::array_t<float> img) -> auto {
+            auto mat = numpy_to_mat<1>(img);
+            auto matProcessed = fm.GetProcessImage(mat);
+            return mat_to_numpy(matProcessed);
+        }, "Process Image")
+        .def("register_image", [](const FourierMellin& fm, py::array_t<float> img0, py::array_t<float> img1) -> auto {
+            auto mat0 = numpy_to_mat<1>(img0);
+            auto mat1 = numpy_to_mat<1>(img1);
+            auto[transformed, transform] = fm.GetRegisteredImage(mat0, mat1);
+            return std::make_tuple(mat_to_numpy(transformed), transform);
+        }, "Register Image");
 
     m.def("get_filters", [](int cols, int rows) -> auto {
         auto highPassFilter = getHighPassFilter(rows, cols);

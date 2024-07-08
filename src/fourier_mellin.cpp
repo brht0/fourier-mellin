@@ -1,6 +1,6 @@
 #include "fourier_mellin.hpp"
 
-cv::Mat getTransformed(const cv::Mat& img, const Transform& transform){
+cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
     cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point(img.cols, img.rows)/2.f, transform.rotation, transform.scale);
     cv::Mat transformed;
     cv::warpAffine(img, transformed, rotationMatrix, img.size());
@@ -13,13 +13,13 @@ cv::Mat getTransformed(const cv::Mat& img, const Transform& transform){
     return transformed;
 }
 
-cv::Mat getProcessedImage(const cv::Mat &img, const cv::Mat& highPassFilter, const cv::Mat& apodizationWindow, const LogPolarMap& logPolarMap){
+cv::Mat getProcessedImage(const cv::Mat &img, const cv::Mat& highPassFilter, const cv::Mat& apodizationWindow, const LogPolarMap& logPolarMap) {
     auto filtered0 = getFilteredImage(img, apodizationWindow, highPassFilter);
     auto logPolar0 = getLogPolarImage(filtered0, logPolarMap.xMap, logPolarMap.yMap);
     return logPolar0;
 }
 
-Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::Mat &logPolar0, const cv::Mat &logPolar1, const LogPolarMap& logPolarMap){
+Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::Mat &logPolar0, const cv::Mat &logPolar1, const LogPolarMap& logPolarMap) {
     auto[logScale, logRotation] = cv::phaseCorrelate(logPolar1, logPolar0);
     double rotation = -logRotation / logPolarMap.logPolarSize * 180.0;
     double scale = 1.0 / std::pow(logPolarMap.logBase, -logScale);
@@ -39,4 +39,29 @@ Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::
         .rotation = rotation,
         .response = response
     };
+}
+
+FourierMellin::FourierMellin(int cols, int rows):
+    cols_(cols), rows_(rows),
+    highPassFilter_(getHighPassFilter(rows_, cols_)),
+    apodizationWindow_(getApodizationWindow(cols_, rows_, std::min(rows, cols))),
+    logPolarMap_(createLogPolarMap(cols_, rows_))
+{
+}
+
+FourierMellin::~FourierMellin() {
+}
+
+cv::Mat FourierMellin::GetProcessImage(const cv::Mat &img) const {
+    return getProcessedImage(img, highPassFilter_, apodizationWindow_, logPolarMap_);
+}
+
+std::tuple<cv::Mat, Transform> FourierMellin::GetRegisteredImage(const cv::Mat &img0, const cv::Mat &img1) const {
+    auto logPolar0 = GetProcessImage(img0);
+    auto logPolar1 = GetProcessImage(img1);
+
+    auto transform = registerGrayImage(img0, img1, logPolar0, logPolar1, logPolarMap_);
+    auto transformed = getTransformed(img0, transform);
+
+    return std::make_tuple(transformed, transform);
 }

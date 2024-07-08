@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 find_package(OpenCV REQUIRED)
 find_package(PythonLibs REQUIRED)
 
-set(SOURCES fft.cpp filters.cpp fourier_mellin.cpp log_polar_map.cpp)
+set(SOURCES fourier_mellin.cpp utilities.cpp)
 
 add_executable(${PROJECT_NAME} main.cpp ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})

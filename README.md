@@ -1,15 +1,17 @@
-# Fourier-Mellin
+# Fourier-Mellin Image Registration Python Library using OpenCV
 
-Todo
+This repository implements the Fourier-Mellin transform for image registration and video stabilization using semilog polar coordinates with OpenCV. The implementation is written in C++, but python bindings are provided. For information about the pipeline, see [this article](https://ieeexplore.ieee.org/document/506761).
 
 ## Requirements
 
 - OpenCV
-- PyBind11
-- g++-11 (or other C++20 compliant compiler)
+- pybind11
+- C++20 compliant compiler (e.g. g++-11)
+
+You can install the requirements with the following command:
 
 ```
-pip install pybind11 g++-11
+sudo apt install pybind11 g++-11
 ```
 
 ## Building
@@ -24,4 +26,12 @@ cmake --build build/release -j 4
 
 ## Usage
 
-Todo
+See the `examples/` folder.
+
+## Todo
+
+- Major cleanup
+- Unit tests
+- Install/Uninstall
+- Proper Readme
+- Optimization

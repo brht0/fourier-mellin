@@ -75,6 +75,8 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
         }
         else{
             transformSum_ = transform + transformSum_;
+            transformSum_.xOffset += (- transformSum_.xOffset) * 0.05;
+            transformSum_.yOffset += (- transformSum_.yOffset) * 0.05;
         }
         auto transformed = getTransformed(gray, transformSum_);
         return {transformed, transformSum_};

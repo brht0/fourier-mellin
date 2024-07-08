@@ -18,6 +18,16 @@ struct Transform{
     double scale;
     double rotation;
     double response;
+
+    inline Transform operator+(const Transform& transform) const{
+        return Transform{
+            .xOffset = xOffset + transform.xOffset,
+            .yOffset = xOffset + transform.yOffset,
+            .scale = scale,
+            .rotation = rotation + transform.rotation,
+            .response = response,
+        };
+    }
 };
 
 cv::Mat getTransformed(const cv::Mat& img, const Transform& transform);
@@ -33,8 +43,20 @@ public:
 
     cv::Mat GetProcessImage(const cv::Mat &img) const;
     std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img0, const cv::Mat &img1) const;
-    // std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img0, const cv::Mat &img1, const cv::Mat &logPolar0, const cv::Mat &logPolar1);
-    // Transform GetRegisteredImageTransform(const cv::Mat &img0, const cv::Mat &img1, const cv::Mat &logPolar0, const cv::Mat &logPolar1, const LogPolarMap& logPolarMap);
+
+private:
+    int cols_, rows_;
+    cv::Mat highPassFilter_;
+    cv::Mat apodizationWindow_;
+    LogPolarMap logPolarMap_;
+};
+
+class FourierMellinContinuous{
+public:
+    FourierMellinContinuous(int cols, int rows);
+    ~FourierMellinContinuous();
+
+    std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img0);
 
 private:
     int cols_, rows_;
@@ -42,6 +64,9 @@ private:
     cv::Mat apodizationWindow_;
     LogPolarMap logPolarMap_;
 
+    bool isFirst_;
+    cv::Mat prevGray_;
+    cv::Mat prevLogPolar_;
 };
 
 #endif // __FOURIER_MELLIN_H__

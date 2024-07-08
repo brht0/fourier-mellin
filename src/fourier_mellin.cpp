@@ -83,3 +83,35 @@ std::tuple<cv::Mat, Transform> FourierMellin::GetRegisteredImage(const cv::Mat &
 
     return std::make_tuple(transformed, transform);
 }
+
+FourierMellinContinuous::FourierMellinContinuous(int cols, int rows):
+    cols_(cols), rows_(rows),
+    highPassFilter_(getHighPassFilter(rows_, cols_)),
+    apodizationWindow_(getApodizationWindow(cols_, rows_, std::min(rows, cols))),
+    logPolarMap_(createLogPolarMap(cols_, rows_)),
+    isFirst_(true)
+{
+}
+
+FourierMellinContinuous::~FourierMellinContinuous() {
+}
+
+std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const cv::Mat &img){
+    cv::Mat gray = convertToGrayscale(img);
+    auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
+
+    if(std::exchange(isFirst_, false)){
+        prevGray_ = gray;
+        prevLogPolar_ = logPolar;
+        return {cv::Mat(), Transform{}};
+    }
+    else{
+        auto transform = registerGrayImage(gray, prevGray_, logPolar, prevLogPolar_, logPolarMap_);
+        auto transformed = getTransformed(gray, transform);
+
+        prevGray_ = gray;
+        prevLogPolar_ = logPolar;
+
+        return {transformed, transform};
+    }
+}

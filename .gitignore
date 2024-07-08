@@ -1,4 +1,5 @@
 build/
 images/
 *.jpg
+*.mp4
 .vscode/

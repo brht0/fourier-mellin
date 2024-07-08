@@ -23,9 +23,9 @@ struct Transform{
         return Transform{
             .xOffset = xOffset + transform.xOffset,
             .yOffset = xOffset + transform.yOffset,
-            .scale = scale,
+            .scale = (scale + transform.scale) * 0.5, // TODO: This is totally arbitrary
             .rotation = rotation + transform.rotation,
-            .response = response,
+            .response = (response + transform.response) * 0.5, // TODO: This is totally arbitrary
         };
     }
 };
@@ -67,6 +67,7 @@ private:
     bool isFirst_;
     cv::Mat prevGray_;
     cv::Mat prevLogPolar_;
+    Transform transformSum_;
 };
 
 #endif // __FOURIER_MELLIN_H__

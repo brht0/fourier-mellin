@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 
-sys.path.append(os.path.abspath('../build/debug/src'))
+sys.path.append(os.path.abspath('../build/release/src'))
 import cv2_fourier_mellin
 
 input_video = "../images/recording.mp4"
@@ -20,7 +20,6 @@ out = cv2.VideoWriter(output_video_path, fourcc, fps, (width//scaledown_factor, 
 
 fm = cv2_fourier_mellin.FourierMellinContinuous(width//scaledown_factor, height//scaledown_factor)
 
-transformSum = None
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -29,13 +28,8 @@ while True:
 
     stable_frame, transform = fm.register_image(frame)
     if np.prod(stable_frame.shape) > 0:
-        print(transformSum)
-        stable_frame2 = cv2_fourier_mellin.get_transformed(frame, transformSum).astype(np.uint8)
+        stable_frame2 = cv2_fourier_mellin.get_transformed(frame, transform).astype(np.uint8)
         out.write(stable_frame2)
-
-        transformSum = transform + transformSum
-    else:
-        transformSum = transform
 
 cap.release()
 out.release()

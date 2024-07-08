@@ -103,6 +103,7 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
     if(std::exchange(isFirst_, false)){
         prevGray_ = gray;
         prevLogPolar_ = logPolar;
+        transformSum_ = Transform{};
         return {cv::Mat(), Transform{}};
     }
     else{
@@ -111,7 +112,12 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
 
         prevGray_ = gray;
         prevLogPolar_ = logPolar;
-
-        return {transformed, transform};
+        if(transformSum_.scale < 1e-5){
+            transformSum_ = transform;
+        }
+        else{
+            transformSum_ = transform + transformSum_;
+        }
+        return {transformed, transformSum_};
     }
 }

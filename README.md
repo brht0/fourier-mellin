@@ -9,14 +9,14 @@ This repository implements the Fourier-Mellin transform for image registration a
 - CMake (version 3.14 or higher)
 - C++20 compliant compiler (e.g. g++-11)
 
+### Extra dependencies
+
+- pybind11
+
 <!-- You can install the requirements with the following command:
 ```
 sudo apt install cmake build-essential g++-11
 ``` -->
-
-## Extra dependencies
-
-- pybind11
 
 ## Building
 
@@ -44,3 +44,4 @@ python3 ./examples/video_stabilization.py
 - Proper Readme
 - Optimization
 - CLI
+- CUDA

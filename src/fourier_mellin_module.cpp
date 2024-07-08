@@ -16,31 +16,6 @@
 
 namespace py = pybind11;
 
-struct PyLogPolarMap{
-    int logPolarSize;
-    double logBase;
-    py::array_t<float> xMap;
-    py::array_t<float> yMap;
-
-    static PyLogPolarMap ConvertFromLogPolarMap(const LogPolarMap& polarMap){
-        return PyLogPolarMap{
-            .logPolarSize = polarMap.logPolarSize,
-            .logBase = polarMap.logBase,
-            .xMap = mat_to_numpy(polarMap.xMap),
-            .yMap = mat_to_numpy(polarMap.yMap),
-        };
-    }
-
-    LogPolarMap ConvertToLogPolarMap(){
-        return LogPolarMap{
-            .logPolarSize = logPolarSize,
-            .logBase = logBase,
-            .xMap = numpy_to_mat<1>(xMap),
-            .yMap = numpy_to_mat<1>(yMap),
-        };
-    }
-};
-
 template<unsigned int Channels>
 cv::Mat numpy_to_mat(py::array_t<float> input) {
     py::buffer_info buf = input.request();
@@ -88,6 +63,31 @@ py::array_t<float> mat_to_numpy(const cv::Mat& mat) {
         data.data()
     );
 }
+
+struct PyLogPolarMap{
+    int logPolarSize;
+    double logBase;
+    py::array_t<float> xMap;
+    py::array_t<float> yMap;
+
+    static PyLogPolarMap ConvertFromLogPolarMap(const LogPolarMap& polarMap){
+        return PyLogPolarMap{
+            .logPolarSize = polarMap.logPolarSize,
+            .logBase = polarMap.logBase,
+            .xMap = mat_to_numpy(polarMap.xMap),
+            .yMap = mat_to_numpy(polarMap.yMap),
+        };
+    }
+
+    LogPolarMap ConvertToLogPolarMap(){
+        return LogPolarMap{
+            .logPolarSize = logPolarSize,
+            .logBase = logBase,
+            .xMap = numpy_to_mat<1>(xMap),
+            .yMap = numpy_to_mat<1>(yMap),
+        };
+    }
+};
 
 template <typename T>
 std::string to_string_with_precision(const T value, const int n=2){

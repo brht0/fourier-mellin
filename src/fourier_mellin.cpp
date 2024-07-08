@@ -67,7 +67,6 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
     }
     else{
         auto transform = registerGrayImage(gray, prevGray_, logPolar, prevLogPolar_, logPolarMap_);
-        auto transformed = getTransformed(gray, transform);
 
         prevGray_ = gray;
         prevLogPolar_ = logPolar;
@@ -77,6 +76,7 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
         else{
             transformSum_ = transform + transformSum_;
         }
+        auto transformed = getTransformed(gray, transformSum_);
         return {transformed, transformSum_};
     }
 }

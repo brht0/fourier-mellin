@@ -13,7 +13,8 @@
 #include "filters.hpp"
 
 struct Transform{
-    double offset[2];
+    double xOffset;
+    double yOffset;
     double scale;
     double rotation;
     double response;

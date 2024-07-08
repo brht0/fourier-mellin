@@ -25,7 +25,7 @@ int main(){
     auto logPolar1 = getProcessedImage(gray1, highPassFilter, apodizationWindow, logPolarMap);
     auto transform = registerGrayImage(gray0, gray1, logPolar0, logPolar1, logPolarMap);
     
-    std::cout << std::fixed << std::setprecision(2) << "Transform: x=" << transform.offset[0] << ", y=" << transform.offset[1] << ", rotation=" << transform.rotation << ", scale=" << transform.scale << ", response=" << transform.response << std::endl;
+    std::cout << std::fixed << std::setprecision(2) << "Transform: x=" << transform.xOffset << ", y=" << transform.yOffset << ", rotation=" << transform.rotation << ", scale=" << transform.scale << ", response=" << transform.response << std::endl;
 
     cv::Mat registeredImage = getTransformed(img0, transform);
     cv::addWeighted(img1, 0.5, registeredImage, 0.5, 0.0, registeredImage);

@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 sys.path.append(os.path.abspath('../build/debug/src'))
-import brht_fourier_mellin
+import cv2_fourier_mellin
 
 reference = cv2.imread('../images/reference.jpg')
 transformed = cv2.imread('../images/transformed.jpg')
@@ -17,11 +17,11 @@ transformed_gray = np.float32(transformed_gray)
 
 rows, cols = reference.shape[:2]
 
-fm = brht_fourier_mellin.FourierMellin(cols, rows)
+fm = cv2_fourier_mellin.FourierMellin(cols, rows)
 
-transformed, transform = fm.register_image(reference_gray, transformed_gray)
+transformed_reference, transform = fm.register_image(reference, transformed)
 print(transform)
 
-overlay = cv2.addWeighted(transformed, 0.5, reference_gray, 0.5, 0.0, dtype=cv2.CV_32F)
+overlay = cv2.addWeighted(transformed, 0.5, transformed_reference, 0.5, 0.0, dtype=cv2.CV_32F)
 cv2.imwrite("overlay.jpg", overlay)
 cv2.imwrite("transformed.jpg", transformed)

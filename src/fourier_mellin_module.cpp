@@ -18,9 +18,27 @@ namespace py = pybind11;
 
 template<unsigned int Channels>
 cv::Mat numpy_to_mat(py::array_t<float> input) {
-    // TODO: Make this properly, but for some reason this is necessary to manually set channels
     py::buffer_info buf = input.request();
     cv::Mat mat(buf.shape[0], buf.shape[1], CV_32FC(Channels), (float*)buf.ptr);
+    return mat;
+}
+
+template<>
+cv::Mat numpy_to_mat<0>(py::array_t<float> input){
+    py::buffer_info buf = input.request();
+    int type;
+    int channels = buf.ndim == 3 ? buf.shape[2] : 1;
+
+    switch(channels){
+        case 1: type = CV_32FC1; break;
+        case 2: type = CV_32FC2; break;
+        case 3: type = CV_32FC3; break;
+        // case 4: type = CV_32FC4; break;
+        default:
+            throw std::runtime_error("Invalid channel count: " + std::to_string(channels));
+            break;
+    }
+    cv::Mat mat(buf.shape[0], buf.shape[1], CV_32FC(channels), (float*)buf.ptr);
     return mat;
 }
 
@@ -40,9 +58,9 @@ py::array_t<float> mat_to_numpy(const cv::Mat& mat) {
     }
 
     return py::array_t<float>(
-        {rows, cols, channels}, // shape
-        {cols * channels * sizeof(float), channels * sizeof(float), sizeof(float)}, // strides
-        data.data() // the data pointer
+        {rows, cols, channels},
+        {cols * channels * sizeof(float), channels * sizeof(float), sizeof(float)},
+        data.data()
     );
 }
 
@@ -106,8 +124,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             return mat_to_numpy(matProcessed);
         }, "Process Image")
         .def("register_image", [](const FourierMellin& fm, py::array_t<float> img0, py::array_t<float> img1) -> auto {
-            auto mat0 = numpy_to_mat<1>(img0);
-            auto mat1 = numpy_to_mat<1>(img1);
+            auto mat0 = numpy_to_mat<0>(img0);
+            auto mat1 = numpy_to_mat<0>(img1);
             auto[transformed, transform] = fm.GetRegisteredImage(mat0, mat1);
             return std::make_tuple(mat_to_numpy(transformed), transform);
         }, "Register Image");

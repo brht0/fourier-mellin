@@ -2,7 +2,7 @@
 
 cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
     cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point(img.cols, img.rows)/2.f, transform.rotation, transform.scale);
-    cv::Mat transformed;
+    cv::Mat transformed(img.size(), img.type());
     cv::warpAffine(img, transformed, rotationMatrix, img.size());
 
     cv::Mat translateMatrix = cv::Mat::eye(2, 3, CV_64F);
@@ -56,11 +56,29 @@ cv::Mat FourierMellin::GetProcessImage(const cv::Mat &img) const {
     return getProcessedImage(img, highPassFilter_, apodizationWindow_, logPolarMap_);
 }
 
-std::tuple<cv::Mat, Transform> FourierMellin::GetRegisteredImage(const cv::Mat &img0, const cv::Mat &img1) const {
-    auto logPolar0 = GetProcessImage(img0);
-    auto logPolar1 = GetProcessImage(img1);
+cv::Mat convertToGrayscale(const cv::Mat& img){
+    if(img.channels() == 1){
+        return img;
+    }
+    else if(img.channels() == 3){
+        cv::Mat gray;
+        cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
+        return gray;
+    }
+    else{
+        throw std::runtime_error("Cannot convert to grayscale with " + std::to_string(img.channels()) + " channels.");
+        return cv::Mat();
+    }
+}
 
-    auto transform = registerGrayImage(img0, img1, logPolar0, logPolar1, logPolarMap_);
+std::tuple<cv::Mat, Transform> FourierMellin::GetRegisteredImage(const cv::Mat &img0, const cv::Mat &img1) const {
+    cv::Mat gray0 = convertToGrayscale(img0);
+    cv::Mat gray1 = convertToGrayscale(img1);
+
+    auto logPolar0 = GetProcessImage(gray0);
+    auto logPolar1 = GetProcessImage(gray1);
+
+    auto transform = registerGrayImage(gray0, gray1, logPolar0, logPolar1, logPolarMap_);
     auto transformed = getTransformed(img0, transform);
 
     return std::make_tuple(transformed, transform);

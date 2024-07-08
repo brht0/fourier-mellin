@@ -56,7 +56,7 @@ public:
     FourierMellinContinuous(int cols, int rows);
     ~FourierMellinContinuous();
 
-    std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img0);
+    std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img);
 
 private:
     int cols_, rows_;
@@ -68,6 +68,24 @@ private:
     cv::Mat prevGray_;
     cv::Mat prevLogPolar_;
     Transform transformSum_;
+};
+
+class FourierMellinWithReference{
+public:
+    FourierMellinWithReference(int cols, int rows);
+    ~FourierMellinWithReference();
+
+    void SetReference(const cv::Mat &img);
+    std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img);
+
+private:
+    int cols_, rows_;
+    cv::Mat highPassFilter_;
+    cv::Mat apodizationWindow_;
+    LogPolarMap logPolarMap_;
+
+    cv::Mat reference_;
+    cv::Mat referenceLogPolar_;
 };
 
 #endif // __FOURIER_MELLIN_H__

@@ -6,7 +6,8 @@ import numpy as np
 sys.path.append(os.path.abspath('../build/release/src'))
 import cv2_fourier_mellin
 
-input_video = "../images/video.mp4"
+# input_video = "../images/video.mp4"
+input_video = "../images/recording.mp4"
 output_video_path = "stabilized.mp4"
 cap = cv2.VideoCapture(input_video)
 
@@ -16,20 +17,22 @@ fps = int(cap.get(cv2.CAP_PROP_FPS))
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 scaledown_factor = 4
-out = cv2.VideoWriter(output_video_path, fourcc, fps, (width//scaledown_factor, height//scaledown_factor), isColor=True)
+out = cv2.VideoWriter(output_video_path, fourcc, fps, (width//scaledown_factor, height//scaledown_factor), isColor=False)
 
-fm = cv2_fourier_mellin.FourierMellinContinuous(width//scaledown_factor, height//scaledown_factor)
+fm = cv2_fourier_mellin.FourierMellinWithReference(width//scaledown_factor, height//scaledown_factor)
 
+referenceIsSet = False
 while True:
     ret, frame = cap.read()
     if not ret:
         break
     frame = cv2.resize(frame, (width//scaledown_factor, height//scaledown_factor))
-
-    stable_frame, transform = fm.register_image(frame)
-    if np.prod(stable_frame.shape) > 0:
-        stable_frame2 = cv2_fourier_mellin.get_transformed(frame, transform).astype(np.uint8)
-        out.write(stable_frame2)
+    if not referenceIsSet:
+        fm.set_reference(frame)
+        referenceIsSet = True
+    else:
+        stable_frame, transform = fm.register_image(frame)
+        out.write(stable_frame.astype(np.uint8))
 
 cap.release()
 out.release()

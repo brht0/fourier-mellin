@@ -96,7 +96,7 @@ FourierMellinContinuous::FourierMellinContinuous(int cols, int rows):
 FourierMellinContinuous::~FourierMellinContinuous() {
 }
 
-std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const cv::Mat &img){
+std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const cv::Mat &img) {
     cv::Mat gray = convertToGrayscale(img);
     auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
 
@@ -120,4 +120,30 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
         }
         return {transformed, transformSum_};
     }
+}
+
+FourierMellinWithReference::FourierMellinWithReference(int cols, int rows):
+    cols_(cols), rows_(rows),
+    highPassFilter_(getHighPassFilter(rows_, cols_)),
+    apodizationWindow_(getApodizationWindow(cols_, rows_, std::min(rows, cols))),
+    logPolarMap_(createLogPolarMap(cols_, rows_))
+{
+}
+
+FourierMellinWithReference::~FourierMellinWithReference() {
+}
+
+void FourierMellinWithReference::SetReference(const cv::Mat &img) {
+    reference_ = convertToGrayscale(img);
+    referenceLogPolar_ = getProcessedImage(reference_, highPassFilter_, apodizationWindow_, logPolarMap_);
+}
+
+std::tuple<cv::Mat, Transform> FourierMellinWithReference::GetRegisteredImage(const cv::Mat &img) {
+    cv::Mat gray = convertToGrayscale(img);
+    auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
+
+    auto transform = registerGrayImage(gray, reference_, logPolar, referenceLogPolar_, logPolarMap_);
+    auto transformed = getTransformed(gray, transform);
+
+    return {transformed, transform};
 }

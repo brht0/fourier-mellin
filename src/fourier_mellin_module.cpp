@@ -135,9 +135,21 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
     py::class_<FourierMellinContinuous>(m, "FourierMellinContinuous")
         .def(py::init<int, int>())
-        .def("register_image", [](FourierMellinContinuous& fm, py::array_t<float> img0) -> auto {
-            auto mat0 = numpy_to_mat<0>(img0);
+        .def("register_image", [](FourierMellinContinuous& fm, py::array_t<float> img) -> auto {
+            auto mat0 = numpy_to_mat<0>(img);
             auto[transformed, transform] = fm.GetRegisteredImage(mat0);
+            return std::make_tuple(mat_to_numpy(transformed), transform);
+        }, "Register Image");
+
+    py::class_<FourierMellinWithReference>(m, "FourierMellinWithReference")
+        .def(py::init<int, int>())
+        .def("set_reference", [](FourierMellinWithReference& fm, py::array_t<float> img) -> auto {
+            auto mat = numpy_to_mat<0>(img);
+            fm.SetReference(mat);
+        }, "Set Reference")
+        .def("register_image", [](FourierMellinWithReference& fm, py::array_t<float> img) -> auto {
+            auto mat = numpy_to_mat<0>(img);
+            auto[transformed, transform] = fm.GetRegisteredImage(mat);
             return std::make_tuple(mat_to_numpy(transformed), transform);
         }, "Register Image");
 

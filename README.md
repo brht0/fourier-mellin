@@ -41,7 +41,7 @@ pip install ext/cv2_fourier_mellin
 
 ### Video Stabilization Demo
 
-```
+```python
 import cv2
 import numpy as np
 import cv2_fourier_mellin

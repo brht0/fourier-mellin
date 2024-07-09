@@ -1,6 +1,10 @@
-# Fourier-Mellin Image Registration Python Library using OpenCV
+# Fourier-Mellin Python Library using OpenCV
 
 This repository implements the Fourier-Mellin transform for image registration and video stabilization using semilog polar coordinates with OpenCV. The implementation is written in C++, but python bindings are provided. For information about the pipeline, see [this article](https://ieeexplore.ieee.org/document/506761). Tested on Ubuntu 20.04.
+
+### Disclaimer
+
+This repository is an unstable release and not intended for production. Many other repositories have implemented the Fourier-Mellin transform, for example [imreg_fmt by sthoduka](https://github.com/sthoduka/imreg_fmt) or [fourier-mellin by polakluk](https://github.com/polakluk/fourier-mellin).
 
 Note that the image registration only works effectively for Eucledian/similar transformations without affine or perspective distortions.
 

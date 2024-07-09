@@ -13,6 +13,10 @@ Original video can be found [on Youtube](https://www.youtube.com/watch?v=mQxnB2X
 
 
 
+## Image Registration
+
+
+
 
 ## Requirements (Ubuntu 20.04)
 
@@ -49,6 +53,33 @@ git clone https://github.com/brht0/fourier-mellin ext/cv2_fourier_mellin
 python3 -m venv venv
 source venv/bin/activate
 pip install ext/cv2_fourier_mellin
+```
+
+### Image Matching Demo
+
+```python
+import cv2
+import numpy as np
+import cv2_fourier_mellin
+
+reference = cv2.imread('lenna.png')
+transformed = cv2.imread('lenna_transformed.png')
+
+reference_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
+transformed_gray = cv2.cvtColor(transformed, cv2.COLOR_BGR2GRAY)
+
+reference_gray = np.float32(reference_gray)
+transformed_gray = np.float32(transformed_gray)
+
+rows, cols = reference.shape[:2]
+
+fm = cv2_fourier_mellin.FourierMellin(cols, rows)
+
+transformed_reference, transform = fm.register_image(reference, transformed)
+
+overlay = cv2.addWeighted(transformed, 0.5, transformed_reference, 0.5, 0.0, dtype=cv2.CV_32F)
+cv2.imwrite("overlay.jpg", overlay)
+cv2.imwrite("transformed.jpg", transformed)
 ```
 
 ### Video Stabilization Demo

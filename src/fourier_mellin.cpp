@@ -78,7 +78,7 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
             transformSum_.xOffset += (- transformSum_.xOffset) * 0.05;
             transformSum_.yOffset += (- transformSum_.yOffset) * 0.05;
         }
-        auto transformed = getTransformed(gray, transformSum_);
+        auto transformed = getTransformed(img, transformSum_);
         return {transformed, transformSum_};
     }
 }
@@ -104,7 +104,7 @@ std::tuple<cv::Mat, Transform> FourierMellinWithReference::GetRegisteredImage(co
     auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
 
     auto transform = registerGrayImage(gray, reference_, logPolar, referenceLogPolar_, logPolarMap_);
-    auto transformed = getTransformed(gray, transform);
+    auto transformed = getTransformed(img, transform);
 
     return {transformed, transform};
 }

@@ -21,7 +21,7 @@ Original video can be found [on Youtube](https://www.youtube.com/watch?v=mQxnB2X
 ## Requirements (Ubuntu 20.04)
 
 - OpenCV (tested with OpenCV 4.10.0)
-- Python3 (tested with python3.8)
+- python3.x-dev (tested with python3.8)
 - CMake (version 3.14 or higher)
 - C++20 compliant compiler (e.g. g++-11)
 
@@ -29,6 +29,9 @@ You can install the build requirements with the following command:
 
 ```
 sudo apt install cmake build-essential g++-11
+
+# If using Python 3.9
+sudo apt install python3.9-dev
 ```
 
 ### Extra dependencies

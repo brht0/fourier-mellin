@@ -11,7 +11,13 @@ target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 
 include_directories(${OpenCV_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 
-set(MODULE_NAME cv2_fourier_mellin)
-add_definitions(-DMODULE_NAME=${MODULE_NAME})
-pybind11_add_module("${MODULE_NAME}" fourier_mellin_module.cpp ${SOURCES})
-target_link_libraries("${MODULE_NAME}" PRIVATE ${OpenCV_LIBS})
+if(BUILD_PYTHON_MODULE)
+    add_definitions(-DMODULE_NAME=${MODULE_NAME})
+    pybind11_add_module(${MODULE_NAME} fourier_mellin_module.cpp ${SOURCES})
+    target_link_libraries(${MODULE_NAME} PRIVATE ${OpenCV_LIBS})
+    set_target_properties(${MODULE_NAME} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${MODULE_NAME}
+        # LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/${MODULE_NAME}
+        # LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/${MODULE_NAME}
+    )
+endif()

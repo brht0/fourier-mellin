@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 project(fourier-mellin)
 
-option(BUILD_PYTHON_MODULE "Build the Python module" ON)
+option(BUILD_PYTHON_MODULE "Build the Python module" OFF)
 
 set(MODULE_NAME cv2_fourier_mellin)
 

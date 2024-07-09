@@ -18,13 +18,35 @@ This repository implements the Fourier-Mellin transform for image registration a
 sudo apt install cmake build-essential g++-11
 ``` -->
 
-## Building
+## Adding to a Python Project
+
+Disclaimer: This repository is an unstable build, and it is highly discouraged to do a system-wide install. Please use a virtual enviroment.
+
+### Cloning the repository
+
+```
+# Python project's root directory
+mkdir ext
+git clone https://github.com/brht0/fourier-mellin ext/cv2_fourier_mellin
+```
+
+### Building the package inside a virtual enviroment
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install ext/cv2_fourier_mellin
+```
+
+## Building (No Python Bindings)
+
+This is not required for usage inside Python. You may skip this step.
 
 ```
 mkdir -p build/release
 cd build/release
 cmake ../.. -DCMAKE_CXX_COMPILER=/usr/bin/g++-11 -DCMAKE_BUILD_TYPE=Release
-cd -
+cd ../..
 cmake --build build/release -j 4
 ```
 
@@ -33,7 +55,7 @@ cmake --build build/release -j 4
 See the examples in the `examples/` folder. You can run the examples from the root directory:
 
 ```
-python3 ./examples/video_stabilization.py
+python3 ./examples/video_stabilization.py input_video.mp4 output_video.mp4
 ```
 
 ## Todo

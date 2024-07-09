@@ -155,3 +155,4 @@ cmake --build build/release -j 4
 - CUDA with OpenCV
 - Documentation
 - Option to calculate transform with lower resolution
+- Clipping issue with overlay images

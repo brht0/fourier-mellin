@@ -187,7 +187,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
     }, "Register Images");
 
     m.def("get_transformed", [](const py::array_t<float>& img, Transform transform){
-        auto mat = numpy_to_mat<3>(img);
+        auto mat = numpy_to_mat<0>(img);
         auto transformed = getTransformed(mat, transform);
         return mat_to_numpy(transformed);
     }, "Process Image");

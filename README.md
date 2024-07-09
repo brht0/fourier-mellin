@@ -2,6 +2,18 @@
 
 This repository implements the Fourier-Mellin transform for image registration and video stabilization using semilog polar coordinates with OpenCV. The implementation is written in C++, but python bindings are provided. For information about the pipeline, see [this article](https://ieeexplore.ieee.org/document/506761). Tested on Ubuntu 20.04.
 
+## Video Stabilization
+
+
+
+
+https://github.com/brht0/fourier-mellin/assets/90235713/c5524042-6bc6-46b5-837e-adb62ddcf9b1
+
+Original video can be found [on Youtube](https://www.youtube.com/watch?v=mQxnB2X26CI) (No affiliation)
+
+
+
+
 ## Requirements (Ubuntu 20.04)
 
 - OpenCV (tested with OpenCV 4.10.0)

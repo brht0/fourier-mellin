@@ -134,7 +134,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         }, "Register Image");
 
     py::class_<FourierMellinContinuous>(m, "FourierMellinContinuous")
-        .def(py::init<int, int>())
+        .def(py::init<int, int, double>())
         .def("register_image", [](FourierMellinContinuous& fm, const py::array_t<float>& img) -> auto {
             auto mat0 = numpy_to_mat<0>(img);
             auto[transformed, transform] = fm.GetRegisteredImage(mat0);

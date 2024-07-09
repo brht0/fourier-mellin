@@ -58,7 +58,7 @@ fps = int(cap.get(cv2.CAP_PROP_FPS))
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 out = cv2.VideoWriter(output_video, fourcc, fps, (width, height))
 
-fm = cv2_fourier_mellin.FourierMellinContinuous(width, height)
+fm = cv2_fourier_mellin.FourierMellinContinuous(width, height, 0.1)
 
 print(f"Starting video stabilization for {input_video} into {output_video}.")
 frame_counter = 0
@@ -101,3 +101,4 @@ cmake --build build/release -j 4
 - CLI
 - CUDA with OpenCV
 - Documentation
+- Option to calculate transform with lower resolution

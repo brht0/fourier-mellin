@@ -30,6 +30,8 @@ cv::Mat getFilteredImage(const cv::Mat &gray, const cv::Mat& apodizationWindow, 
 
 cv::Mat getTransformed(const cv::Mat& img, const Transform& transform);
 
+cv::Mat getCropped(const cv::Mat& img, double x1, double y1, double x2, double y2);
+
 cv::Mat getProcessedImage(const cv::Mat &img, const cv::Mat& highPassFilter, const cv::Mat& apodizationWindow, const LogPolarMap& logPolarMap);
 
 Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::Mat &logPolar0, const cv::Mat &logPolar1, const LogPolarMap& logPolarMap);

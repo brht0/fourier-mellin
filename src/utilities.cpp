@@ -137,6 +137,18 @@ cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
     return transformed;
 }
 
+cv::Mat getCropped(const cv::Mat& img, double x1, double y1, double x2, double y2) {
+    int x_start = static_cast<int>(x1);
+    int y_start = static_cast<int>(y1);
+    int width = static_cast<int>(x2 - x1);
+    int height = static_cast<int>(y2 - y1);
+
+    cv::Rect roi(x_start, y_start, width, height);
+
+    cv::Mat cropped = img(roi);
+    return cropped;
+}
+
 cv::Mat getProcessedImage(const cv::Mat &img, const cv::Mat& highPassFilter, const cv::Mat& apodizationWindow, const LogPolarMap& logPolarMap) {
     auto filtered0 = getFilteredImage(img, apodizationWindow, highPassFilter);
     auto logPolar0 = getLogPolarImage(filtered0, logPolarMap.xMap, logPolarMap.yMap);

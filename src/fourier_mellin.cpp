@@ -43,8 +43,9 @@ std::tuple<cv::Mat, Transform> FourierMellin::GetRegisteredImage(const cv::Mat &
     return std::make_tuple(transformed, transform);
 }
 
-FourierMellinContinuous::FourierMellinContinuous(int cols, int rows):
+FourierMellinContinuous::FourierMellinContinuous(int cols, int rows, double edgeCrop):
     cols_(cols), rows_(rows),
+    edgeCrop_(edgeCrop),
     highPassFilter_(getHighPassFilter(rows_, cols_)),
     apodizationWindow_(getApodizationWindow(cols_, rows_, std::min(rows, cols))),
     logPolarMap_(createLogPolarMap(cols_, rows_)),
@@ -75,11 +76,18 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
         }
         else{
             transformSum_ = transform + transformSum_;
-            transformSum_.xOffset += (- transformSum_.xOffset) * 0.05;
-            transformSum_.yOffset += (- transformSum_.yOffset) * 0.05;
+            transformSum_.xOffset += (- transformSum_.xOffset) * pullToCenterRatio_;
+            transformSum_.yOffset += (- transformSum_.yOffset) * pullToCenterRatio_;
         }
         auto transformed = getTransformed(img, transformSum_);
-        return {transformed, transformSum_};
+        if(edgeCrop_ != 0.0){
+            auto cropped = getCropped(transformed, edgeCrop_ * cols_, edgeCrop_ * rows_, (1.0 - edgeCrop_) * cols_, (1.0 - edgeCrop_) * rows_);
+            cv::resize(cropped, cropped, cv::Size(cols_, rows_), cv::INTER_LINEAR);
+            return {cropped, transformSum_};
+        }
+        else{
+            return {transformed, transformSum_};
+        }
     }
 }
 

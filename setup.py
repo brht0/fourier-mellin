@@ -28,6 +28,7 @@ class CMakeBuildExt(build_ext):
             
             # This is temporary, find something else, or make C++17 compliant
             f'-DCMAKE_CXX_COMPILER=g++-11',
+            f'-DCMAKE_VERBOSE_MAKEFILE=ON',
         ]
 
         build_args = ['--config', cfg, '--', '-j2']
@@ -45,9 +46,12 @@ class CMakeBuildExt(build_ext):
 
         built_lib = glob.glob(os.path.join(self.build_temp, '**', 'cv2_fourier_mellin*.so'), recursive=True)[0]
         package_dir = os.path.join(os.path.dirname(__file__), 'cv2_fourier_mellin')
+        dest_path = self.get_ext_fullpath(ext.name)
+        dest_dir = os.path.dirname(dest_path)
         if not os.path.exists(package_dir):
             os.makedirs(package_dir)
-        shutil.move(built_lib, os.path.join(package_dir, "cv2_fourier_mellin.so"))
+            
+        shutil.move(built_lib, os.path.join(dest_dir, "cv2_fourier_mellin.so"))
 
 
 setup(

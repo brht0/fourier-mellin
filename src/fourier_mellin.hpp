@@ -23,7 +23,7 @@ private:
 
 class FourierMellinContinuous{
 public:
-    FourierMellinContinuous(int cols, int rows, double edgeCrop = 0.1);
+    FourierMellinContinuous(int cols, int rows, double edgeCrop = 0.1, double pullToCenterRatio = 0.07);
     ~FourierMellinContinuous();
 
     std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img);
@@ -31,6 +31,7 @@ public:
 private:
     int cols_, rows_;
     double edgeCrop_;
+    double pullToCenterRatio_;
     cv::Mat highPassFilter_;
     cv::Mat apodizationWindow_;
     LogPolarMap logPolarMap_;
@@ -39,8 +40,6 @@ private:
     cv::Mat prevGray_;
     cv::Mat prevLogPolar_;
     Transform transformSum_;
-
-    inline static constexpr double pullToCenterRatio_ = 0.07;
 };
 
 class FourierMellinWithReference{

@@ -1,5 +1,7 @@
 #include "fourier_mellin.hpp"
 
+#include <iostream>
+
 FourierMellin::FourierMellin(int cols, int rows):
     cols_(cols), rows_(rows),
     highPassFilter_(getHighPassFilter(rows_, cols_)),
@@ -43,9 +45,10 @@ std::tuple<cv::Mat, Transform> FourierMellin::GetRegisteredImage(const cv::Mat &
     return std::make_tuple(transformed, transform);
 }
 
-FourierMellinContinuous::FourierMellinContinuous(int cols, int rows, double edgeCrop):
+FourierMellinContinuous::FourierMellinContinuous(int cols, int rows, double edgeCrop, double pullToCenterRatio):
     cols_(cols), rows_(rows),
     edgeCrop_(edgeCrop),
+    pullToCenterRatio_(pullToCenterRatio),
     highPassFilter_(getHighPassFilter(rows_, cols_)),
     apodizationWindow_(getApodizationWindow(cols_, rows_, std::min(rows, cols))),
     logPolarMap_(createLogPolarMap(cols_, rows_)),

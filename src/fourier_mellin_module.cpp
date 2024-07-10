@@ -106,6 +106,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         .def("__add__",[](const Transform &a, const Transform& b) {
             return a + b;
         }, py::is_operator())
+        .def("__sub__",[](const Transform &a, const Transform& b) {
+            return a - b;
+        }, py::is_operator())
+        .def("__iadd__",[](Transform &a, const Transform& b) {
+            return a += b;
+        }, py::is_operator())
+        .def("__isub__",[](Transform &a, const Transform& b) {
+            return a -= b;
+        }, py::is_operator())
         .def_readwrite("x_offset", &Transform::xOffset)
         .def_readwrite("y_offset", &Transform::yOffset)
         .def_readwrite("scale", &Transform::scale)
@@ -134,7 +143,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         }, "Register Image");
 
     py::class_<FourierMellinContinuous>(m, "FourierMellinContinuous")
-        .def(py::init<int, int, double>())
+        .def(py::init<int, int>())
+        .def(py::init<int, int, double, double>())
         .def("register_image", [](FourierMellinContinuous& fm, const py::array_t<float>& img) -> auto {
             auto mat0 = numpy_to_mat<0>(img);
             auto[transformed, transform] = fm.GetRegisteredImage(mat0);

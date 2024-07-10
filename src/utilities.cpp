@@ -1,6 +1,7 @@
 #include "utilities.hpp"
 
 #include <numbers>
+#include <iostream>
 
 constexpr long double pi = std::numbers::pi_v<long double>;
 
@@ -130,8 +131,8 @@ cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
     cv::warpAffine(img, transformed, rotationMatrix, img.size());
 
     cv::Mat translateMatrix = cv::Mat::eye(2, 3, CV_64F);
-    translateMatrix.at<double>(0, 2) = -transform.xOffset;
-    translateMatrix.at<double>(1, 2) = -transform.yOffset;
+    translateMatrix.at<double>(0, 2) = transform.xOffset;
+    translateMatrix.at<double>(1, 2) = transform.yOffset;
     cv::warpAffine(transformed, transformed, translateMatrix, transformed.size());
 
     return transformed;
@@ -169,8 +170,8 @@ Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::
     auto[xOffset, yOffset] = cv::phaseCorrelate(img1, rotated0, cv::noArray(), &response);
 
     return Transform{
-        .xOffset = xOffset,
-        .yOffset = yOffset,
+        .xOffset = -xOffset,
+        .yOffset = -yOffset,
         .scale = scale,
         .rotation = rotation,
         .response = response

@@ -105,16 +105,25 @@ FourierMellinWithReference::FourierMellinWithReference(int cols, int rows):
 FourierMellinWithReference::~FourierMellinWithReference() {
 }
 
-void FourierMellinWithReference::SetReference(const cv::Mat &img) {
-    reference_ = convertToGrayscale(img);
-    referenceLogPolar_ = getProcessedImage(reference_, highPassFilter_, apodizationWindow_, logPolarMap_);
+void FourierMellinWithReference::SetReference(const cv::Mat &img, int designation) {
+    references_[designation] = convertToGrayscale(img);
+    referenceLogPolars_[designation] = getProcessedImage(references_[designation], highPassFilter_, apodizationWindow_, logPolarMap_);
+    currentDesignation_ = designation;
+}
+
+void FourierMellinWithReference::SetReferenceWithDesignation(int designation){
+    if(!references_.contains(designation)){
+        std::cerr << "References do not contain given designation: " << designation << "\n";
+        return;
+    }
+    currentDesignation_ = designation;
 }
 
 std::tuple<cv::Mat, Transform> FourierMellinWithReference::GetRegisteredImage(const cv::Mat &img) {
     cv::Mat gray = convertToGrayscale(img);
     auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
 
-    auto transform = registerGrayImage(gray, reference_, logPolar, referenceLogPolar_, logPolarMap_);
+    auto transform = registerGrayImage(gray, references_[currentDesignation_], logPolar, referenceLogPolars_[currentDesignation_], logPolarMap_);
     auto transformed = getTransformed(img, transform);
 
     return {transformed, transform};

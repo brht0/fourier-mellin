@@ -153,9 +153,12 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
     py::class_<FourierMellinWithReference>(m, "FourierMellinWithReference")
         .def(py::init<int, int>())
-        .def("set_reference", [](FourierMellinWithReference& fm, const py::array_t<float>& img) -> auto {
+        .def("set_reference", [](FourierMellinWithReference& fm, const py::array_t<float>& img, int designation=-1) -> auto {
             auto mat = numpy_to_mat<0>(img);
-            fm.SetReference(mat);
+            fm.SetReference(mat, designation);
+        }, "Set Reference")
+        .def("set_reference_with_designation", [](FourierMellinWithReference& fm, int designation) -> auto {
+            fm.SetReferenceWithDesignation(designation);
         }, "Set Reference")
         .def("register_image", [](FourierMellinWithReference& fm, const py::array_t<float>& img) -> auto {
             auto mat = numpy_to_mat<0>(img);

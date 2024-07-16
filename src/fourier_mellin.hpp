@@ -2,6 +2,7 @@
 #define __FOURIER_MELLIN_H__
 
 #include <iostream>
+#include <map>
 
 #include "utilities.hpp"
 #include "transform.hpp"
@@ -47,7 +48,8 @@ public:
     FourierMellinWithReference(int cols, int rows);
     ~FourierMellinWithReference();
 
-    void SetReference(const cv::Mat &img);
+    void SetReference(const cv::Mat &img, int designation = -1);
+    void SetReferenceWithDesignation(int designation);
     std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img);
 
 private:
@@ -57,8 +59,10 @@ private:
     cv::Mat apodizationWindow_;
     LogPolarMap logPolarMap_;
 
-    cv::Mat reference_;
-    cv::Mat referenceLogPolar_;
+    int currentDesignation_;
+    std::map<int, cv::Mat> references_;
+    std::map<int, cv::Mat> referenceLogPolars_;
+
 };
 
 #endif // __FOURIER_MELLIN_H__

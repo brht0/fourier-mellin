@@ -28,7 +28,7 @@ class CMakeBuildExt(build_ext):
             
             # This is temporary, find something else, or make C++17 compliant
             f'-DCMAKE_CXX_COMPILER=g++-11',
-            f'-DCMAKE_VERBOSE_MAKEFILE=ON',
+            # f'-DCMAKE_VERBOSE_MAKEFILE=ON',
         ]
 
         build_args = ['--config', cfg, '--', '-j2']

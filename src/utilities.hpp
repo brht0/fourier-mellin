@@ -36,4 +36,6 @@ cv::Mat getProcessedImage(const cv::Mat &img, const cv::Mat& highPassFilter, con
 
 Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::Mat &logPolar0, const cv::Mat &logPolar1, const LogPolarMap& logPolarMap);
 
+// cv::Mat phaseCorrelateWithImage();
+
 #endif // __UTILITIES_H__

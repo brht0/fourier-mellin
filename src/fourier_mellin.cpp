@@ -119,12 +119,20 @@ void FourierMellinWithReference::SetReferenceWithDesignation(int designation){
     currentDesignation_ = designation;
 }
 
-std::tuple<cv::Mat, Transform> FourierMellinWithReference::GetRegisteredImage(const cv::Mat &img) {
+std::tuple<cv::Mat, Transform> FourierMellinWithReference::GetRegisteredImage(const cv::Mat &img) const {
     cv::Mat gray = convertToGrayscale(img);
     auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
 
-    auto transform = registerGrayImage(gray, references_[currentDesignation_], logPolar, referenceLogPolars_[currentDesignation_], logPolarMap_);
+    auto transform = registerGrayImage(gray, references_.at(currentDesignation_), logPolar, referenceLogPolars_.at(currentDesignation_), logPolarMap_);
     auto transformed = getTransformed(img, transform);
 
     return {transformed, transform};
+}
+
+Transform FourierMellinWithReference::GetRegisteredImageTransform(const cv::Mat &img) const {
+    cv::Mat gray = convertToGrayscale(img);
+    auto logPolar = getProcessedImage(gray, highPassFilter_, apodizationWindow_, logPolarMap_);
+
+    auto transform = registerGrayImage(gray, references_.at(currentDesignation_), logPolar, referenceLogPolars_.at(currentDesignation_), logPolarMap_);
+    return transform;
 }

@@ -169,6 +169,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             pybind11::gil_scoped_acquire acquire;
             return std::make_tuple(mat_to_numpy(transformed), transform);
         }, "Register Image")
+        .def("register_image_only_transform", [](FourierMellinWithReference& fm, const py::array_t<float>& img) -> auto {
+            auto mat = numpy_to_mat<0>(img);
+            pybind11::gil_scoped_release release;
+            auto[transformed, transform] = fm.GetRegisteredImage(mat);
+            // pybind11::gil_scoped_acquire acquire;
+            return transform;
+        }, "Register Image but return only the transform.")
         .def("register_image_batched", [](FourierMellinWithReference& fm, const py::list imgs) -> auto {
             std::vector<cv::Mat> imgsMat;
             std::vector<std::tuple<cv::Mat, Transform>> results;
@@ -200,7 +207,39 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             }
 
             return pyresults;
-        }, "Register image in batches.");
+        }, "Register image in batches.")
+        .def("register_image_batched_only_transform", [](FourierMellinWithReference& fm, const py::list imgs) -> auto {
+            std::vector<cv::Mat> imgsMat;
+            std::vector<Transform> results;
+            unsigned imgsSize = imgs.size();
+            imgsMat.reserve(imgsSize);
+            results.reserve(imgsSize);
+
+            for(const auto& img : imgs){
+                if(!py::isinstance<py::array>(img)){
+                    throw std::runtime_error("List element is not a NumPy array.");
+                }
+                auto mat = numpy_to_mat<0>(py::cast<py::array_t<float>>(img));
+                imgsMat.push_back(mat);
+            }
+
+            {
+                pybind11::gil_scoped_release release;
+                for(const auto& mat : imgsMat){
+                    const auto& transform = fm.GetRegisteredImageTransform(mat);
+                    results.push_back(transform);
+                }
+            }
+            
+            pybind11::gil_scoped_acquire acquire;
+            py::list pyresults;
+
+            for(const auto& transform : results){
+                pyresults.append(transform);
+            }
+
+            return pyresults;
+        }, "Register image in batches without returning transformed images.");
 
     m.def("get_filters", [](int cols, int rows) -> auto {
         auto highPassFilter = getHighPassFilter(rows, cols);

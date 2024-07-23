@@ -50,7 +50,8 @@ public:
 
     void SetReference(const cv::Mat &img, int designation = -1);
     void SetReferenceWithDesignation(int designation);
-    std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img);
+    std::tuple<cv::Mat, Transform> GetRegisteredImage(const cv::Mat &img) const;
+    Transform GetRegisteredImageTransform(const cv::Mat &img) const;
 
 private:
     int cols_, rows_;

@@ -155,14 +155,18 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         .def(py::init<int, int>())
         .def("set_reference", [](FourierMellinWithReference& fm, const py::array_t<float>& img, int designation=-1) -> auto {
             auto mat = numpy_to_mat<0>(img);
+            pybind11::gil_scoped_release release;
             fm.SetReference(mat, designation);
+            pybind11::gil_scoped_acquire acquire;
         }, "Set Reference")
         .def("set_reference_with_designation", [](FourierMellinWithReference& fm, int designation) -> auto {
             fm.SetReferenceWithDesignation(designation);
         }, "Set Reference")
         .def("register_image", [](FourierMellinWithReference& fm, const py::array_t<float>& img) -> auto {
             auto mat = numpy_to_mat<0>(img);
+            pybind11::gil_scoped_release release;
             auto[transformed, transform] = fm.GetRegisteredImage(mat);
+            pybind11::gil_scoped_acquire acquire;
             return std::make_tuple(mat_to_numpy(transformed), transform);
         }, "Register Image");
 

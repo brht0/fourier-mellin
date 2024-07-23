@@ -156,3 +156,4 @@ cmake --build build/release -j 4
 - Documentation
 - Option to calculate transform with lower resolution
 - Clipping issue with overlay images
+- Proper threading support

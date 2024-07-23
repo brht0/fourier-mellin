@@ -56,7 +56,7 @@ class CMakeBuildExt(build_ext):
 
 setup(
     name='cv2_fourier_mellin',
-    version='0.1.0',
+    version='0.1.1',
     author='Todo',
     author_email='todo.todo@todo.com',
     description='A Python package for Fourier Mellin transformation using OpenCV',

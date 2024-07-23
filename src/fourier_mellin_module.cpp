@@ -168,7 +168,39 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             auto[transformed, transform] = fm.GetRegisteredImage(mat);
             pybind11::gil_scoped_acquire acquire;
             return std::make_tuple(mat_to_numpy(transformed), transform);
-        }, "Register Image");
+        }, "Register Image")
+        .def("register_image_batched", [](FourierMellinWithReference& fm, const py::list imgs) -> auto {
+            std::vector<cv::Mat> imgsMat;
+            std::vector<std::tuple<cv::Mat, Transform>> results;
+            unsigned imgsSize = imgs.size();
+            imgsMat.reserve(imgsSize);
+            results.reserve(imgsSize);
+
+            for(const auto& img : imgs){
+                if(!py::isinstance<py::array>(img)){
+                    throw std::runtime_error("List element is not a NumPy array.");
+                }
+                auto mat = numpy_to_mat<0>(py::cast<py::array_t<float>>(img));
+                imgsMat.push_back(mat);
+            }
+
+            {
+                pybind11::gil_scoped_release release;
+                for(const auto& mat : imgsMat){
+                    auto[transformed, transform] = fm.GetRegisteredImage(mat);
+                    results.push_back(std::make_tuple(transformed, transform));
+                }
+            }
+            
+            pybind11::gil_scoped_acquire acquire;
+            py::list pyresults;
+
+            for(const auto&[transformed, transform] : results){
+                pyresults.append(py::make_tuple(mat_to_numpy(transformed), transform));
+            }
+
+            return pyresults;
+        }, "Register image in batches.");
 
     m.def("get_filters", [](int cols, int rows) -> auto {
         auto highPassFilter = getHighPassFilter(rows, cols);

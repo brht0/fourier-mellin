@@ -157,3 +157,4 @@ cmake --build build/release -j 4
 - Option to calculate transform with lower resolution
 - Clipping issue with overlay images
 - Proper threading support
+- cv::phaseCorrelate already applies Hanning Window

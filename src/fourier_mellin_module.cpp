@@ -113,14 +113,18 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                 {matrix.rows, matrix.cols},
                 {matrix.step[0], matrix.step[1]},
                 matrix.ptr<double>());
-        }, py::is_operator())
+        }, "Get Matrix")
         .def("get_inverse_matrix",[](const Transform &a) {
             cv::Mat matrix = a.GetMatrixInverse();
             return py::array_t<double>(
                 {matrix.rows, matrix.cols},
                 {matrix.step[0], matrix.step[1]},
                 matrix.ptr<double>());
-        }, py::is_operator())
+        }, "Get Inverse Matrix")
+        .def("get_inverse",[](const Transform &a) {
+            return a.GetInverse();
+        }, "Get Inverse Transform")
+
         // .def("__add__",[](const Transform &a, const Transform& b) {
         //     return a + b;
         // }, py::is_operator())

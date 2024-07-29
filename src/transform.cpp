@@ -100,3 +100,7 @@ Transform& Transform::operator*=(const Transform& rhs){
     *this = *this * rhs;
     return *this;
 }
+
+Transform Transform::GetInverse() const {
+    return Transform(GetMatrixInverse(), response_);
+}

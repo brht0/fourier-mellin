@@ -17,6 +17,8 @@ public:
     // TODO: This assumes `matrix` is properly defined 2D transformation matrix
     Transform(const cv::Mat& matrix, double response);
 
+    Transform GetInverse() const;
+
     cv::Mat GetMatrixInverse() const;
     cv::Mat GetMatrix() const;
 

@@ -2,6 +2,7 @@
 #define __TRANSFORM_H__
 
 #include <ostream>
+#include <opencv2/opencv.hpp>
 
 /*
 TODO: Use matrices instead
@@ -9,47 +10,36 @@ TODO: Use matrices instead
 - inverse
 */
 
-struct Transform{
-    double xOffset;
-    double yOffset;
-    double scale;
-    double rotation;
-    double response;
+class Transform{
+public:
+    Transform(double xOffset=0.0, double yOffset=0.0, double scale=1.0, double rotationDeg=0.0, double response=0.0);
+    Transform(const cv::Mat& matrix, double response);
 
-    inline Transform operator+(const Transform& transform) const{
-        return Transform{
-            .xOffset = xOffset + transform.xOffset,
-            .yOffset = yOffset + transform.yOffset,
-            .scale = (scale + transform.scale) * 0.5, // TODO: This is totally arbitrary
-            .rotation = rotation + transform.rotation,
-            .response = (response + transform.response) * 0.5, // TODO: This is totally arbitrary
-        };
-    }
+    cv::Mat GetMatrixInverse() const;
+    cv::Mat GetMatrix() const;
 
-    inline Transform operator-(const Transform& transform) const{
-        return Transform{
-            .xOffset = xOffset - transform.xOffset,
-            .yOffset = yOffset - transform.yOffset,
-            .scale = (scale + transform.scale) * 0.5,
-            .rotation = rotation - transform.rotation,
-            .response = (response + transform.response) * 0.5,
-        };
-    }
+    void SetOffsetX(double x);
+    void SetOffsetY(double y);
+    void SetScale(double scale);
+    void SetRotation(double rotationDeg);
+    void SetResponse(double response);
 
-    inline Transform& operator+=(const Transform& transform){
-        *this = *this + transform;
-        return *this;
-    }
+    double GetOffsetX() const;
+    double GetOffsetY() const;
+    double GetScale() const;
+    double GetRotation() const;
+    double GetResponse() const;
 
-    inline Transform& operator-=(const Transform& transform){
-        *this = *this - transform;
-        return *this;
-    }
+    Transform operator*(const Transform& rhs) const;
+
+private:
+    double xOffset_;
+    double yOffset_;
+    double scale_;
+    double rotation_;
+    double response_;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const Transform& t){
-    os << "Transform(" << t.xOffset << ", " << t.yOffset << ", " << t.scale << ", " << t.rotation << ", " << t.response << ")";
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const Transform& t);
 
 #endif // __TRANSFORM_H__

@@ -101,25 +101,42 @@ PYBIND11_MODULE(MODULE_NAME, m) {
     py::class_<Transform>(m, "Transform")
         .def(py::init<>())
         .def("__repr__", [](const Transform& t){
-            return "<" TOSTRING(MODULE_NAME) ".Transform x_offset=" + to_string_with_precision(t.xOffset, 2) + ", y_offset=" + to_string_with_precision(t.yOffset, 2) + ", rotation=" + to_string_with_precision(t.rotation, 2) + ", scale=" + to_string_with_precision(t.scale, 2) + ", response=" + to_string_with_precision(t.response, 2) + ">";
+            return "<" TOSTRING(MODULE_NAME) ".Transform x_offset=" + to_string_with_precision(t.GetOffsetX(), 2) + ", y_offset=" + to_string_with_precision(t.GetOffsetY(), 2) + ", rotation=" + to_string_with_precision(t.GetRotation(), 2) + ", scale=" + to_string_with_precision(t.GetScale(), 2) + ", response=" + to_string_with_precision(t.GetResponse(), 2) + ">";
         })
-        .def("__add__",[](const Transform &a, const Transform& b) {
-            return a + b;
+        .def("__mul__",[](const Transform &a, const Transform& b) {
+            return a * b;
         }, py::is_operator())
-        .def("__sub__",[](const Transform &a, const Transform& b) {
-            return a - b;
+        .def("get_matrix",[](const Transform &a) {
+            cv::Mat matrix = a.GetMatrix();
+            return py::array_t<double>(
+                {matrix.rows, matrix.cols},
+                {matrix.step[0], matrix.step[1]},
+                matrix.ptr<double>());
         }, py::is_operator())
-        .def("__iadd__",[](Transform &a, const Transform& b) {
-            return a += b;
+        .def("get_inverse_matrix",[](const Transform &a) {
+            cv::Mat matrix = a.GetMatrixInverse();
+            return py::array_t<double>(
+                {matrix.rows, matrix.cols},
+                {matrix.step[0], matrix.step[1]},
+                matrix.ptr<double>());
         }, py::is_operator())
-        .def("__isub__",[](Transform &a, const Transform& b) {
-            return a -= b;
-        }, py::is_operator())
-        .def_readwrite("x_offset", &Transform::xOffset)
-        .def_readwrite("y_offset", &Transform::yOffset)
-        .def_readwrite("scale", &Transform::scale)
-        .def_readwrite("rotation", &Transform::rotation)
-        .def_readwrite("response", &Transform::response);
+        // .def("__add__",[](const Transform &a, const Transform& b) {
+        //     return a + b;
+        // }, py::is_operator())
+        // .def("__sub__",[](const Transform &a, const Transform& b) {
+        //     return a - b;
+        // }, py::is_operator())
+        // .def("__iadd__",[](Transform &a, const Transform& b) {
+        //     return a += b;
+        // }, py::is_operator())
+        // .def("__isub__",[](Transform &a, const Transform& b) {
+        //     return a -= b;
+        // }, py::is_operator())
+        .def("x", &Transform::GetOffsetX)
+        .def("y", &Transform::GetOffsetY)
+        .def("scale", &Transform::GetRotation)
+        .def("rotation", &Transform::GetScale)
+        .def("response", &Transform::GetResponse);
         
     py::class_<PyLogPolarMap>(m, "LogPolarMap")
         .def(py::init<>())

@@ -126,13 +126,13 @@ cv::Mat getFilteredImage(const cv::Mat &gray, const cv::Mat& apodizationWindow, 
 }
 
 cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
-    cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point(img.cols, img.rows)/2.f, transform.rotation, transform.scale);
+    cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point(img.cols, img.rows)/2.f, transform.GetRotation(), transform.GetScale());
     cv::Mat transformed(img.size(), img.type());
     cv::warpAffine(img, transformed, rotationMatrix, img.size());
 
     cv::Mat translateMatrix = cv::Mat::eye(2, 3, CV_64F);
-    translateMatrix.at<double>(0, 2) = transform.xOffset;
-    translateMatrix.at<double>(1, 2) = transform.yOffset;
+    translateMatrix.at<double>(0, 2) = transform.GetOffsetX();
+    translateMatrix.at<double>(1, 2) = transform.GetOffsetY();
     cv::warpAffine(transformed, transformed, translateMatrix, transformed.size());
 
     return transformed;
@@ -169,11 +169,11 @@ Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::
     double response;
     auto[xOffset, yOffset] = cv::phaseCorrelate(img1, rotated0, cv::noArray(), &response);
 
-    return Transform{
-        .xOffset = -xOffset,
-        .yOffset = -yOffset,
-        .scale = scale,
-        .rotation = rotation,
-        .response = response
-    };
+    return Transform(
+        -xOffset,
+        -yOffset,
+        scale,
+        rotation,
+        response
+    );
 }

@@ -67,7 +67,7 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
     if(std::exchange(isFirst_, false)){
         prevGray_ = gray;
         prevLogPolar_ = logPolar;
-        transformSum_ = Transform{};
+        totalTransform_ = Transform{};
         return {cv::Mat(), Transform{}};
     }
     else{
@@ -75,22 +75,24 @@ std::tuple<cv::Mat, Transform> FourierMellinContinuous::GetRegisteredImage(const
 
         prevGray_ = gray;
         prevLogPolar_ = logPolar;
-        if(transformSum_.scale < 1e-5){
-            transformSum_ = transform;
+        if(totalTransform_.GetScale() < 1e-5){
+            totalTransform_ = transform;
         }
         else{
-            transformSum_ = transform + transformSum_;
-            transformSum_.xOffset += (- transformSum_.xOffset) * pullToCenterRatio_;
-            transformSum_.yOffset += (- transformSum_.yOffset) * pullToCenterRatio_;
+            totalTransform_ = transform * totalTransform_;
+
+            // TODO: Pull to center with new transforms
+            // transformSum_.xOffset += (- transformSum_.xOffset) * pullToCenterRatio_;
+            // transformSum_.yOffset += (- transformSum_.yOffset) * pullToCenterRatio_;
         }
-        auto transformed = getTransformed(img, transformSum_);
+        auto transformed = getTransformed(img, totalTransform_);
         if(edgeCrop_ != 0.0){
             auto cropped = getCropped(transformed, edgeCrop_ * cols_, edgeCrop_ * rows_, (1.0 - edgeCrop_) * cols_, (1.0 - edgeCrop_) * rows_);
             cv::resize(cropped, cropped, cv::Size(cols_, rows_), cv::INTER_LINEAR);
-            return {cropped, transformSum_};
+            return {cropped, totalTransform_};
         }
         else{
-            return {transformed, transformSum_};
+            return {transformed, totalTransform_};
         }
     }
 }

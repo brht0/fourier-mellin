@@ -40,7 +40,7 @@ private:
     bool isFirst_;
     cv::Mat prevGray_;
     cv::Mat prevLogPolar_;
-    Transform transformSum_;
+    Transform totalTransform_;
 };
 
 class FourierMellinWithReference{

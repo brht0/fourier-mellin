@@ -100,6 +100,7 @@ std::string to_string_with_precision(const T value, const int n=2){
 PYBIND11_MODULE(MODULE_NAME, m) {
     py::class_<Transform>(m, "Transform")
         .def(py::init<>())
+        .def(py::init<double, double, double, double, double>())
         .def("__repr__", [](const Transform& t){
             return "<" TOSTRING(MODULE_NAME) ".Transform x_offset=" + to_string_with_precision(t.GetOffsetX(), 2) + ", y_offset=" + to_string_with_precision(t.GetOffsetY(), 2) + ", rotation=" + to_string_with_precision(t.GetRotation(), 2) + ", scale=" + to_string_with_precision(t.GetScale(), 2) + ", response=" + to_string_with_precision(t.GetResponse(), 2) + ">";
         })
@@ -132,11 +133,21 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         // .def("__isub__",[](Transform &a, const Transform& b) {
         //     return a -= b;
         // }, py::is_operator())
-        .def("x", &Transform::GetOffsetX)
-        .def("y", &Transform::GetOffsetY)
-        .def("scale", &Transform::GetRotation)
-        .def("rotation", &Transform::GetScale)
-        .def("response", &Transform::GetResponse);
+        .def("x", [](const Transform& t) {
+            return t.GetOffsetX();
+        }, "Get X Offset")
+        .def("y", [](const Transform& t) {
+            return t.GetOffsetY();
+        }, "Get Y Offset")
+        .def("scale", [](const Transform& t) {
+            return t.GetRotation();
+        }, "Get Scale")
+        .def("rotation", [](const Transform& t) {
+            return t.GetScale();
+        }, "Get Rotation")
+        .def("response", [](const Transform& t) {
+            return t.GetResponse();
+        }, "Get Response");
         
     py::class_<PyLogPolarMap>(m, "LogPolarMap")
         .def(py::init<>())

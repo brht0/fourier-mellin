@@ -1,16 +1,20 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.27)
 
 find_package(OpenCV REQUIRED)
 
 set(SOURCES fourier_mellin.cpp utilities.cpp transform.cpp)
 
-add_executable(demo demo.cpp ${SOURCES})
-target_include_directories(demo PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(demo ${OpenCV_LIBS})
+add_library(fourier_mellin STATIC
+    ${SOURCES}
+)
+target_include_directories(fourier_mellin PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(fourier_mellin ${OpenCV_LIBS})
 
-add_executable(benchmark benchmark.cpp ${SOURCES})
-target_include_directories(benchmark PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(benchmark ${OpenCV_LIBS})
+add_executable(demo demo.cpp)
+target_link_libraries(demo fourier_mellin)
+
+add_executable(benchmark benchmark.cpp)
+target_link_libraries(benchmark fourier_mellin)
 
 if(BUILD_PYTHON_MODULE)
     include_directories(${OpenCV_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})

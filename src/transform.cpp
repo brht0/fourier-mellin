@@ -1,4 +1,6 @@
 #include "transform.hpp"
+#include <numbers>
+#include <iomanip>
 
 Transform::Transform(double xOffset, double yOffset, double scale, double rotationDeg, double response):
     xOffset_(xOffset),
@@ -16,15 +18,15 @@ Transform::Transform(const cv::Mat& matrix, double response){
     yOffset_ = matrix.at<double>(1, 2);
 
     scale_ = std::hypot(matrix.at<double>(0, 0), matrix.at<double>(0, 1));
-    rotation_ = std::atan2(matrix.at<double>(1, 0), matrix.at<double>(0, 0));
+    rotation_ = std::atan2(matrix.at<double>(1, 0), matrix.at<double>(0, 0)) * (180.0/std::numbers::pi_v<double>);
     response_ = response;
 }
 
 cv::Mat Transform::GetMatrix() const {
-    cv::Mat transform = cv::Mat::zeros(2, 3, CV_64F);
+    cv::Mat transform = cv::Mat::zeros(3, 3, CV_64F);
 
-    double c = std::cos(rotation_);
-    double s = std::sin(rotation_);
+    double c = std::cos(rotation_ * (std::numbers::pi_v<double>/180.0));
+    double s = std::sin(rotation_ * (std::numbers::pi_v<double>/180.0));
 
     transform.at<double>(0, 0) = scale_ * c;
     transform.at<double>(0, 1) = -scale_ * s;
@@ -69,7 +71,7 @@ Transform Transform::operator*(const Transform& rhs) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Transform& t){
-    os << "Transform(" << t.GetOffsetX() << ", " << t.GetOffsetY() << ", " << t.GetScale() << ", " << t.GetRotation() << ", " << t.GetResponse() << ")";
+    os << std::fixed << std::setprecision(2) << "Transform(" << t.GetOffsetX() << ", " << t.GetOffsetY() << ", " << t.GetScale() << ", " << t.GetRotation() << ", " << t.GetResponse() << ")";
     return os;
 }
 
@@ -91,4 +93,9 @@ void Transform::SetRotation(double rotationDeg) {
 
 void Transform::SetResponse(double response) {
     response_ = response;
+}
+
+Transform& Transform::operator*=(const Transform& rhs){
+    *this = *this * rhs;
+    return *this;
 }

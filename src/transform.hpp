@@ -13,6 +13,8 @@ TODO: Use matrices instead
 class Transform{
 public:
     Transform(double xOffset=0.0, double yOffset=0.0, double scale=1.0, double rotationDeg=0.0, double response=0.0);
+
+    // TODO: This assumes `matrix` is properly defined 2D transformation matrix
     Transform(const cv::Mat& matrix, double response);
 
     cv::Mat GetMatrixInverse() const;
@@ -31,6 +33,7 @@ public:
     double GetResponse() const;
 
     Transform operator*(const Transform& rhs) const;
+    Transform& operator*=(const Transform& rhs);
 
 private:
     double xOffset_;

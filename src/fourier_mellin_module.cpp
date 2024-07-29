@@ -140,10 +140,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             return t.GetOffsetY();
         }, "Get Y Offset")
         .def("scale", [](const Transform& t) {
-            return t.GetRotation();
+            return t.GetScale();
         }, "Get Scale")
         .def("rotation", [](const Transform& t) {
-            return t.GetScale();
+            return t.GetRotation();
         }, "Get Rotation")
         .def("response", [](const Transform& t) {
             return t.GetResponse();

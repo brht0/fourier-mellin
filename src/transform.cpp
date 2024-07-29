@@ -66,7 +66,8 @@ double Transform::GetResponse() const {
 }
 
 Transform Transform::operator*(const Transform& rhs) const {
-    double response = (response_ + rhs.response_) * 0.5;
+    // double response = (response_ + rhs.response_) * 0.5;
+    double response = std::min(response_, rhs.response_);
     return Transform(GetMatrix() * rhs.GetMatrix(), response);
 }
 

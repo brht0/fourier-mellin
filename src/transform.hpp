@@ -1,6 +1,14 @@
 #ifndef __TRANSFORM_H__
 #define __TRANSFORM_H__
 
+#include <ostream>
+
+/*
+TODO: Use matrices instead
+- multiplication
+- inverse
+*/
+
 struct Transform{
     double xOffset;
     double yOffset;
@@ -38,5 +46,10 @@ struct Transform{
         return *this;
     }
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Transform& t){
+    os << "Transform(" << t.xOffset << ", " << t.yOffset << ", " << t.scale << ", " << t.rotation << ", " << t.response << ")";
+    return os;
+}
 
 #endif // __TRANSFORM_H__

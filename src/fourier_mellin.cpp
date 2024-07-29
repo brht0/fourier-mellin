@@ -18,6 +18,7 @@ cv::Mat FourierMellin::GetProcessImage(const cv::Mat &img) const {
 }
 
 cv::Mat convertToGrayscale(const cv::Mat& img){
+    // TODO: Don't return another mat, modify 'img' instead
     if(img.channels() == 1){
         return img;
     }

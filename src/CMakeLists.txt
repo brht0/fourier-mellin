@@ -4,9 +4,13 @@ find_package(OpenCV REQUIRED)
 
 set(SOURCES fourier_mellin.cpp utilities.cpp)
 
-add_executable(${PROJECT_NAME} demo.cpp ${SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+add_executable(demo demo.cpp ${SOURCES})
+target_include_directories(demo PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(demo ${OpenCV_LIBS})
+
+add_executable(benchmark benchmark.cpp ${SOURCES})
+target_include_directories(benchmark PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(benchmark ${OpenCV_LIBS})
 
 if(BUILD_PYTHON_MODULE)
     include_directories(${OpenCV_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})

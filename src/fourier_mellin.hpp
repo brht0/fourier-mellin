@@ -63,7 +63,6 @@ private:
     int currentDesignation_;
     std::map<int, cv::Mat> references_;
     std::map<int, cv::Mat> referenceLogPolars_;
-
 };
 
 #endif // __FOURIER_MELLIN_H__

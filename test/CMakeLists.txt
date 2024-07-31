@@ -12,6 +12,17 @@ target_link_libraries(
     GTest::gtest_main
 )
 
+add_executable(
+    test_fourier_mellin
+    test_fourier_mellin.cpp
+)
+target_link_libraries(
+    test_fourier_mellin
+    fourier_mellin
+    GTest::gtest_main
+)
+
 include(GoogleTest)
 gtest_discover_tests(test_transforms)
+gtest_discover_tests(test_fourier_mellin)
 

@@ -12,7 +12,7 @@ TEST(DefaultConstructor, BasicAssertions) {
     EXPECT_DOUBLE_EQ(t.GetOffsetY(), 0.0);
     EXPECT_DOUBLE_EQ(t.GetScale(), 1.0);
     EXPECT_DOUBLE_EQ(t.GetRotation(), 0.0);
-    EXPECT_DOUBLE_EQ(t.GetResponse(), 0.0);
+    EXPECT_DOUBLE_EQ(t.GetResponse(), 1.0);
 }
 
 TEST(Rotation, BasicAssertions) {

@@ -158,3 +158,4 @@ cmake --build build/release -j 4
 - Clipping issue with overlay images
 - Proper threading support
 - cv::phaseCorrelate already applies Hanning Window
+- PyPi

@@ -126,15 +126,17 @@ cv::Mat getFilteredImage(const cv::Mat &gray, const cv::Mat& apodizationWindow, 
 }
 
 cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
-    cv::Mat rotationMatrix = cv::getRotationMatrix2D(cv::Point(img.cols, img.rows)/2.f, transform.GetRotation(), transform.GetScale());
-    cv::Mat transformed(img.size(), img.type());
-    cv::warpAffine(img, transformed, rotationMatrix, img.size());
+    // TODO: Interpolation
 
-    cv::Mat translateMatrix = cv::Mat::eye(2, 3, CV_64F);
-    translateMatrix.at<double>(0, 2) = transform.GetOffsetX();
-    translateMatrix.at<double>(1, 2) = transform.GetOffsetY();
-    cv::warpAffine(transformed, transformed, translateMatrix, transformed.size());
+    cv::Point2f center(img.cols/2.f, img.rows/2.f);
 
+    cv::Mat rotationMatrix = cv::getRotationMatrix2D(center, transform.GetRotation(), transform.GetScale());
+    rotationMatrix.at<double>(0, 2) += transform.GetOffsetX();
+    rotationMatrix.at<double>(1, 2) += -transform.GetOffsetY();
+
+    cv::Mat transformed = img.clone();
+
+    cv::warpAffine(transformed, transformed, rotationMatrix, transformed.size());
     return transformed;
 }
 
@@ -171,7 +173,7 @@ Transform registerGrayImage(const cv::Mat &img0, const cv::Mat &img1, const cv::
 
     return Transform(
         -xOffset,
-        -yOffset,
+        yOffset,
         scale,
         rotation,
         response

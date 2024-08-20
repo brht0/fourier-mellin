@@ -6,6 +6,7 @@
 constexpr long double pi = std::numbers::pi_v<long double>;
 
 LogPolarMap createLogPolarMap(int cols, int rows){
+    // TODO: Improve this 
     int logPolarSize = std::max(cols, rows);
     double logBase = std::exp(std::log(logPolarSize * 1.5 / 2.0) / logPolarSize);
     float ellipse_coefficient = rows / (float)cols;
@@ -136,7 +137,7 @@ cv::Mat getTransformed(const cv::Mat& img, const Transform& transform) {
 
     cv::Mat transformed = img.clone();
 
-    cv::warpAffine(transformed, transformed, rotationMatrix, transformed.size());
+    cv::warpAffine(transformed, transformed, rotationMatrix, transformed.size(), cv::INTER_CUBIC);
     return transformed;
 }
 

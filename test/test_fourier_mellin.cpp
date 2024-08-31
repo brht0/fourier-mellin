@@ -34,6 +34,48 @@ double DifferenceL2(const cv::Mat& a, const cv::Mat& b){
     return l2Diff;
 }
 
+auto readImage = [](const std::string& fn){
+    cv::Mat img = cv::imread(fn, cv::IMREAD_COLOR);
+    img.convertTo(img, CV_32FC(3));
+    EXPECT_NE(img.size(), cv::Size(0, 0));
+    return img;
+};
+
+auto expectTransformsNear = [](const std::vector<Transform>& ts, double xyMargin=2.0, double scaleMargin=2.0e-2, double rotationMargin=2.0){
+    for(size_t i=0; i<ts.size(); i++){
+        for(size_t j=0; j<ts.size(); j++){
+            if(i == j)
+                continue;
+            EXPECT_NEAR(ts[i].GetScale(), ts[j].GetScale(), scaleMargin);
+            EXPECT_NEAR(ts[i].GetOffsetX(), ts[j].GetOffsetX(), xyMargin);
+            EXPECT_NEAR(ts[i].GetOffsetY(), ts[j].GetOffsetY(), xyMargin);
+            EXPECT_NEAR(ts[i].GetRotation(), ts[j].GetRotation(), rotationMargin);
+        }
+    }
+};
+
+auto expectImagesNear = [](const cv::Mat& img1, const cv::Mat& img2){
+    static int i=0;
+    double l2 = DifferenceL2(img1, img2) / (img1.size().width * img1.size().height);
+    EXPECT_LE(l2, 20);
+
+    auto imgDiff = GetL2Difference(img1, img2);
+    std::ostringstream filename;
+    filename << "output/img_difference_" << (i++) << ".jpg";
+    std::string filenameStr = filename.str();
+    cv::imwrite(filenameStr, imgDiff);
+};
+
+auto scaleTransformToImage = [](const Transform& t, double scalar){
+    return Transform(
+        t.GetOffsetX() * scalar,
+        t.GetOffsetY() * scalar,
+        t.GetScale(),
+        t.GetRotation(),
+        t.GetResponse()
+    );
+};
+
 TEST(ImageTransformConsistency2, BasicAssertions) {
     Transform t_01(0, 0, 0.9, 15, 1);
     constexpr unsigned iterations = 10;
@@ -341,45 +383,9 @@ TEST(ChainedFourierMellin_DirectAndCumulative1, BasicAssertions) {
 }
 
 TEST(FourierMellin_ImageFeed1, BasicAssertions) {
-    auto readImage = [](const std::string& fn){
-        cv::Mat img = cv::imread(fn, cv::IMREAD_COLOR);
-        img.convertTo(img, CV_32FC(3));
-        EXPECT_NE(img.size(), cv::Size(0, 0));
-        return img;
-    };
-
-    auto expectTransformsNear = [](const std::vector<Transform>& ts){
-        for(size_t i=0; i<ts.size(); i++){
-            for(size_t j=0; j<ts.size(); j++){
-                if(i == j)
-                    continue;
-                EXPECT_NEAR(ts[i].GetScale(), ts[j].GetScale(), 2.0e-2);
-                EXPECT_NEAR(ts[i].GetOffsetX(), ts[j].GetOffsetX(), 2.0e-0);
-                EXPECT_NEAR(ts[i].GetOffsetY(), ts[j].GetOffsetY(), 2.0e-0);
-                EXPECT_NEAR(ts[i].GetRotation(), ts[j].GetRotation(), 2.0e-0);
-            }
-        }
-    };
-
-    auto expectImagesNear = [](const cv::Mat& img1, const cv::Mat& img2){
-        static int i=0;
-        double l2 = DifferenceL2(img1, img2) / (img1.size().width * img1.size().height);
-        EXPECT_LE(l2, 20);
-
-        auto imgDiff = GetL2Difference(img1, img2);
-        std::ostringstream filename;
-        filename << "output/img_difference_" << (i++) << ".jpg";
-        std::string filenameStr = filename.str();
-        cv::imwrite(filenameStr, imgDiff);
-    };
-
-    namespace fs = std::filesystem;
-
     std::string fn0 = "images/image_feed/frame_0020.jpg";
     std::string fn1 = "images/image_feed/frame_0049.jpg";
-    // std::string fn1 = "images/image_feed/frame_0203.jpg";
     std::string fn2 = "images/image_feed/frame_0386.jpg";
-    // std::string fn3 = "images/image_feed/frame_0505.jpg";
     std::string fn3 = "images/image_feed/frame_0564.jpg";
 
     auto img0 = readImage(fn0);
@@ -490,4 +496,89 @@ TEST(FourierMellin_ImageFeed1, BasicAssertions) {
 
     auto img_03_31_12_23_30 = getTransformed(getTransformed(getTransformed(getTransformed(getTransformed(img0, t_03), t_31), t_12), t_23), t_30);
     expectImagesNear(img_03_31_12_23_30, img0);
+}
+
+TEST(FourierMellin_DifferentResolutions1, BasicAssertions) {
+    std::string fn0 = "images/image_feed/frame_0020.jpg";
+    std::string fn1 = "images/image_feed/frame_0049.jpg";
+    std::string fn2 = "images/image_feed/frame_0386.jpg";
+    std::string fn3 = "images/image_feed/frame_0564.jpg";
+
+    auto img0 = readImage(fn0);
+    auto img1 = readImage(fn1);
+    auto img2 = readImage(fn2);
+    auto img3 = readImage(fn3);
+
+    int w = img0.size().width;
+    int h = img0.size().height;
+    int w2 = w / 2;
+    int h2 = h / 2;
+    // int w4 = w / 4;
+    // int h4 = h / 4;
+    // int w8 = w / 8;
+    // int h8 = h / 8;
+
+    cv::Mat img0_2, img1_2, img2_2, img3_2;
+    cv::resize(img0, img0_2, cv::Size(w2, h2));
+    cv::resize(img1, img1_2, cv::Size(w2, h2));
+    cv::resize(img2, img2_2, cv::Size(w2, h2));
+    cv::resize(img3, img3_2, cv::Size(w2, h2));
+
+    FourierMellin fm(w, h);
+    FourierMellin fm2(w2, h2);
+
+    auto[img_01_1, t_01_1] = fm.GetRegisteredImage(img0, img1);
+    auto[img_01_2, t_01_2] = fm2.GetRegisteredImage(img0_2, img1_2);
+
+    auto[img_02_1, t_02_1] = fm.GetRegisteredImage(img0, img2);
+    auto[img_02_2, t_02_2] = fm2.GetRegisteredImage(img0_2, img2_2);
+
+    auto[img_03_1, t_03_1] = fm.GetRegisteredImage(img0, img3);
+    auto[img_03_2, t_03_2] = fm2.GetRegisteredImage(img0_2, img3_2);
+
+    expectTransformsNear({t_01_1, scaleTransformToImage(t_01_2, 2)});
+    expectTransformsNear({t_02_1, scaleTransformToImage(t_02_2, 2)});
+    expectTransformsNear({t_03_1, scaleTransformToImage(t_03_2, 2)});
+}
+
+TEST(FourierMellin_DifferentResolutions2, BasicAssertions) {
+    std::vector<std::string> fns = {
+        "images/image_feed/frame_0020.jpg",
+        "images/image_feed/frame_0049.jpg",
+        "images/image_feed/frame_0386.jpg",
+        "images/image_feed/frame_0564.jpg",
+    };
+
+    std::vector<cv::Mat> imgs;
+    std::for_each(fns.begin(), fns.end(), [&](const auto& fn){
+        imgs.push_back(readImage(fn));
+    });
+
+    for(int i=0; i<imgs.size(); i++){
+        for(int j=0; j<imgs.size(); j++){
+            if(i == j)
+                continue;
+            const auto& img0 = imgs[i];
+            const auto& img1 = imgs[j];
+            int w = img0.size().width;
+            int h = img1.size().height;
+            FourierMellin fm(w, h);
+            
+            auto[img_01_1, t_01_1] = fm.GetRegisteredImage(img0, img1);
+
+            for(int i=2; i<=4; i++){
+                int ww = w / i;
+                int hh = h / i;
+
+                FourierMellin fm2(ww, hh);
+
+                cv::Mat img0_2, img1_2;
+                cv::resize(img0, img0_2, cv::Size(ww, hh));
+                cv::resize(img1, img1_2, cv::Size(ww, hh));
+
+                auto[img_01_2, t_01_2] = fm2.GetRegisteredImage(img0_2, img1_2);
+                expectTransformsNear({t_01_1, scaleTransformToImage(t_01_2, i)}, i);
+            }
+        }
+    }
 }

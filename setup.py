@@ -27,7 +27,7 @@ class CMakeBuildExt(build_ext):
             f'-DBUILD_PYTHON_MODULE=ON',
             
             # This is temporary, find something else, or make C++17 compliant
-            # f'-DCMAKE_CXX_COMPILER=g++-11',
+            f'-DCMAKE_CXX_COMPILER=g++',
             # f'-DCMAKE_VERBOSE_MAKEFILE=ON',
         ]
 

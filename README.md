@@ -159,3 +159,4 @@ cmake --build build/release -j 4
 - Proper threading support
 - cv::phaseCorrelate already applies Hanning Window
 - PyPi
+- github actions workflows

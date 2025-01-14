@@ -1,3 +1,16 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools",
+    "wheel",
+    "scikit-build-core",
+    "cmake>=3.27.0",
+    "ninja",
+    "pybind11>=2.13.0",
+    "pytest>=7.0",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "cv2_fourier_mellin"
+version = "0.1.2"
+

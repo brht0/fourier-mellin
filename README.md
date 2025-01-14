@@ -31,7 +31,7 @@ source .venv/bin/activate
 pip install https://github.com/brht0/fourier-mellin.git 
 ```
 
-### Examples
+## Examples
 
 Many examples, such as video stabilization, are included inside the `examples/` subdirectory. The following example registers two images.
 

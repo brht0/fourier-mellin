@@ -1,5 +1,7 @@
 build/
 images/
+other/
+resources/
 *.jpg
 *.mp4
 __pycache__/

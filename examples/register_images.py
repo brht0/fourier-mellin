@@ -18,3 +18,6 @@ _, t2 = fm.register_image(img_ref, img2)
 
 print(f"Transform: {t1.x():0.1f}, {t1.y():0.1f}, {t1.rotation():0.1f}, {t1.scale():0.1f}, {t1.response():0.1f}")
 print(f"Transform: {t2.x():0.1f}, {t2.y():0.1f}, {t2.rotation():0.1f}, {t2.scale():0.1f}, {t2.response():0.1f}")
+
+print(t1.to_dict())
+print(t2.to_dict())

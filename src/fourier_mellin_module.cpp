@@ -15,6 +15,7 @@
 #define TOSTRING(x) STRINGIFY(x)
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 template<unsigned int Channels>
 cv::Mat numpy_to_mat(const py::array_t<float>& input) {
@@ -151,7 +152,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         }, "Get Rotation")
         .def("response", [](const Transform& t) {
             return t.GetResponse();
-        }, "Get Response");
+        }, "Get Response")
+        .def("to_dict", [](const Transform& t){
+            return py::dict("x"_a=t.GetOffsetX(), "y"_a=t.GetOffsetY(), "scale"_a=t.GetScale(), "rotation"_a=t.GetRotation(), "response"_a=t.GetResponse());
+        });
         
     py::class_<PyLogPolarMap>(m, "LogPolarMap")
         .def(py::init<>())

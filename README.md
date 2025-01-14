@@ -28,7 +28,7 @@ It is recommended to use a python virtual environment. The repository will be ad
 # inside your own project
 python3 -m venv .venv
 source .venv/bin/activate
-pip install https://github.com/brht0/fourier-mellin.git 
+pip install git+https://github.com/brht0/fourier-mellin
 ```
 
 ## Examples

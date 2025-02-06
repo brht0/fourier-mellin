@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-    name='cv2_fourier_mellin',
+    name='fourier_mellin',
     version='0.1.2',
     author='brht0',
     author_email='todo.todo@todo.com',
@@ -8,7 +8,7 @@ setup(
     long_description=open("README.md").read()
     long_description_content_type='text/markdown',
     url="todo",
-    py_modules=["cv2_fourier_mellin"],
+    py_modules=["fourier_mellin"],
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: C++',

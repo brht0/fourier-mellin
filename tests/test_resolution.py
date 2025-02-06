@@ -1,4 +1,4 @@
-import cv2_fourier_mellin
+import fourier_mellin
 import cv2
 
 def test_resolution_1():
@@ -39,7 +39,7 @@ def test_resolution_1():
         y = transform.y() * pxScaler
         scale = transform.scale()
         rotation = transform.rotation()
-        return cv2_fourier_mellin.Transform(
+        return fourier_mellin.Transform(
             x, y, scale, rotation, transform.response()
         )
 
@@ -58,13 +58,13 @@ def test_resolution_1():
     resolution = img1.shape[:2]
     resolution_low  = imreg_config.getProcessedResolution()
 
-    fm = cv2_fourier_mellin.FourierMellin(*resolution_low)
+    fm = fourier_mellin.FourierMellin(*resolution_low)
     img1_low_transformed, transform_low = fm.register_image(img1_low, img2_low)
     overlap_low = (img1_low_transformed//2 + img2_low//2)
     cv2.imwrite("output/testres1_overlap_low.jpg", overlap_low)
 
     transform = convertTransformResolution(transform_low, resolution_low, resolution)
-    img1_transformed = cv2_fourier_mellin.get_transformed(img1, transform)
+    img1_transformed = fourier_mellin.get_transformed(img1, transform)
     overlap = (img1_transformed//2 + img2//2)
     cv2.imwrite("output/testres1_overlap.jpg", overlap)
     # TODO: check MSE, but also works visually

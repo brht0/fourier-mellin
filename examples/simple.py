@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-from cv2_fourier_mellin import FourierMellin
+from fourier_mellin import FourierMellin
 
 img0 = cv2.imread("resources/dog_reference.png", cv2.IMREAD_COLOR)
 img1 = cv2.imread("resources/dog_t01.png", cv2.IMREAD_COLOR)

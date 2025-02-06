@@ -38,13 +38,13 @@ Many examples, such as video stabilization, are included inside the `examples/` 
 ```python
 import cv2
 import numpy as np
-import cv2_fourier_mellin
+import fourier_mellin
 
 reference = cv2.imread('lenna.png')
 transformed = cv2.imread('lenna_transformed.png')
 
 rows, cols = reference.shape[:2]
-fm = cv2_fourier_mellin.FourierMellin(cols, rows)
+fm = fourier_mellin.FourierMellin(cols, rows)
 
 transformed_reference, transform = fm.register_image(reference, transformed)
 overlay = cv2.addWeighted(transformed, 0.5, transformed_reference, 0.5, 0.0, dtype=cv2.CV_32F)

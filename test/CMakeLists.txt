@@ -8,7 +8,7 @@ add_executable(
 )
 target_link_libraries(
     test_transforms
-    fourier_mellin
+    fourier-mellin-library
     GTest::gtest_main
 )
 
@@ -18,7 +18,7 @@ add_executable(
 )
 target_link_libraries(
     test_fourier_mellin
-    fourier_mellin
+    fourier-mellin-library
     GTest::gtest_main
 )
 

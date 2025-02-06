@@ -11,6 +11,6 @@ requires = [
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "cv2_fourier_mellin"
+name = "fourier_mellin"
 version = "0.1.2"
 

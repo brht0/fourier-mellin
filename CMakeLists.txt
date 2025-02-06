@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.27)
 
-project(cv2-fourier-mellin LANGUAGES CXX)
+project(fourier-mellin-library LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(MODULE_NAME cv2_fourier_mellin)
+set(MODULE_NAME fourier_mellin)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 

@@ -1,4 +1,4 @@
-import cv2_fourier_mellin
+import fourier_mellin
 
 def test_module():
-    assert hasattr(cv2_fourier_mellin, 'Transform')
+    assert hasattr(fourier_mellin, 'Transform')

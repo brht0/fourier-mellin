@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.27)
 find_package(OpenCV REQUIRED)
 
 set(SOURCES fourier_mellin.cpp utilities.cpp transform.cpp)
-add_library(fourier_mellin STATIC ${SOURCES})
-target_include_directories(fourier_mellin PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(fourier_mellin ${OpenCV_LIBS})
+add_library(fourier-mellin-library STATIC ${SOURCES})
+target_include_directories(fourier-mellin-library PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(fourier-mellin-library ${OpenCV_LIBS})
 
 add_definitions(-DMODULE_NAME=${MODULE_NAME})
 pybind11_add_module(${MODULE_NAME} fourier_mellin_module.cpp ${SOURCES})

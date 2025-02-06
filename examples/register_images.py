@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from cv2_fourier_mellin import(
+from fourier_mellin import(
     FourierMellin,
 )
 

@@ -14,3 +14,5 @@ venv/
 *.egg-info/
 dist/
 _skbuild/
+clean.bash
+

@@ -23,15 +23,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install cibuildwheel twine
 
-      # - name: Install OpenCV dependencies (Ubuntu)
-      #   run: sudo apt-get update && sudo apt-get install -y libopencv-dev
-
       - name: Build wheels with cibuildwheel
         env:
-          CIBW_SKIP: "cp36-* *-manylinux_i686 *-musllinux_*"
-          CIBW_MANYLINUX_X86_64_IMAGE: ghcr.io/brht0/manylinux-opencv:latest
-          #CIBW_MANYLINUX_I686_IMAGE: ghcf.io/brht0/manylinux-i686-opencv:latest
+          CIBW_SKIP: "cp36-* *_i686 *-musllinux_*"
+          CIBW_MANYLINUX_X86_64_IMAGE: ghcr.io/htoik/fourier-mellin/manylinux-x86_64:latest
+          CIBW_MANYLINUX_AARCH64_IMAGE: ghcr.io/htoik/fourier-mellin/manylinux-aarch64:latest
         run: python -m cibuildwheel --output-dir wheelhouse .
+
+      - name: Build source distribution
+        run: python setup.py sdist --dist-dir wheelhouse
 
       - name: List generated wheels
         run: ls -la wheelhouse
@@ -39,5 +39,5 @@ jobs:
       - name: Publish package to PyPI
         run: twine upload --skip-existing wheelhouse/*
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

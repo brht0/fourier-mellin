@@ -10,9 +10,9 @@ __pycache__/
 .vscode/
 venv/
 .venv/
-docker/
 
 *.egg-info/
 dist/
 _skbuild/
 clean.bash
+wheelhouse/

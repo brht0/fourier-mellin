@@ -10,21 +10,12 @@ RUN yum install -y centos-release-scl epel-release \
         git \
         cmake \
         make \
-        # flann-devel \
-        # libpng-devel \
-        # libjpeg-turbo-devel \
-        # libtiff-devel \
-        # libwebp-devel && \
         && \
     yum clean all && \
     ln -s /usr/bin/cmake3 /usr/bin/cmake || true
 
-# RUN rpm -q wget && which wget
-# RUN yum install -y wget
-
 # Set environment variables so that the new GCC is found first.
 ENV PATH=/opt/rh/devtoolset-10/root/usr/bin:$PATH
-# ENV PATH=/opt/rh/devtoolset-10/root/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 ENV CC=/opt/rh/devtoolset-10/root/usr/bin/gcc
 ENV CXX=/opt/rh/devtoolset-10/root/usr/bin/g++
 
@@ -54,8 +45,8 @@ RUN cmake \
     make install
 
 WORKDIR /
-RUN rm -rf /tmp/opencv-{OPENCV_VERSION}
-RUN rm -rf /tmp/opencv_contrib-{OPENCV_VERSION}
+RUN rm -rf /tmp/opencv-${OPENCV_VERSION} /tmp/opencv_contrib-${OPENCV_VERSION} \
+    /tmp/opencv-${OPENCV_VERSION}.tar.gz /tmp/opencv_contrib-${OPENCV_VERSION}.tar.gz
 
 # Update shared library cache
 RUN ldconfig

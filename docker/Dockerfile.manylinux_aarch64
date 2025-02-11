@@ -1,26 +1,61 @@
 FROM quay.io/pypa/manylinux2014_aarch64
 
-RUN yum update -y
-RUN yum install -y epel-release \
-    gcc gcc-c++ cmake git wget unzip \
-    gtk2-devel libpng-devel jasper-devel
-RUN yum clean all && rm -rf /var/cache/yum
+# Install dependencies
+RUN yum install -y centos-release-scl epel-release \
+        devtoolset-10-gcc \
+        devtoolset-10-gcc-c++ \
+        wget \
+        tar \
+        unzip \
+        git \
+        cmake \
+        make \
+        # flann-devel \
+        # libpng-devel \
+        # libjpeg-turbo-devel \
+        # libtiff-devel \
+        # libwebp-devel && \
+        && \
+    yum clean all && \
+    ln -s /usr/bin/cmake3 /usr/bin/cmake || true
+
+# RUN rpm -q wget && which wget
+# RUN yum install -y wget
+
+# Set environment variables so that the new GCC is found first.
+ENV PATH=/opt/rh/devtoolset-10/root/usr/bin:$PATH
+# ENV PATH=/opt/rh/devtoolset-10/root/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+ENV CC=/opt/rh/devtoolset-10/root/usr/bin/gcc
+ENV CXX=/opt/rh/devtoolset-10/root/usr/bin/g++
+
+ENV OPENCV_VERSION=4.5.2
+WORKDIR /tmp
+
+# Download OpenCV
+RUN wget -O opencv-${OPENCV_VERSION}.tar.gz https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz && \
+    tar xf opencv-${OPENCV_VERSION}.tar.gz && \
+    wget -O opencv_contrib-${OPENCV_VERSION}.tar.gz https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz && \
+    tar xf opencv_contrib-${OPENCV_VERSION}.tar.gz
 
 # Build OpenCV
-ENV OPENCV_VERSION=4.5.2
-RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
-    unzip opencv.zip && \
-    mkdir -p opencv-${OPENCV_VERSION}/build && \
-    cd opencv-${OPENCV_VERSION}/build && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX=/usr/local \
-          -DBUILD_TESTS=OFF \
-          -DBUILD_PERF_TESTS=OFF \
-          .. && \
-    make -j$(nproc) && \
-    make install && \
-    ldconfig && \
-    cd / && rm -rf opencv.zip opencv-${OPENCV_VERSION}
+WORKDIR /tmp/opencv-4.5.2/build
+RUN cmake \
+      -D CMAKE_BUILD_TYPE=Release \
+      -D CMAKE_INSTALL_PREFIX=/usr/local \
+      -D WITH_FLANN=ON \
+      -D BUILD_opencv_python2=OFF \
+      -D BUILD_opencv_python3=OFF \
+      -D BUILD_TESTS=OFF \
+      -D BUILD_PERF_TESTS=OFF \
+      -D CMAKE_CXX_STANDARD=20 \
+      -D CMAKE_CXX_STANDARD_REQUIRED=ON \
+      .. && \
+    make -j"$(nproc)" && \
+    make install
 
-# OpenCV development headers
-RUN yum install -y opencv-devel && yum clean all
+WORKDIR /
+RUN rm -rf /tmp/opencv-{OPENCV_VERSION}
+RUN rm -rf /tmp/opencv_contrib-{OPENCV_VERSION}
+
+# Update shared library cache
+RUN ldconfig

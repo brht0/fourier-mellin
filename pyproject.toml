@@ -12,5 +12,4 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "fourier_mellin"
-version = "0.1.2"
-
+version = "0.1.3"

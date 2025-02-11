@@ -5,7 +5,7 @@ setup(
     author='brht0',
     author_email='todo.todo@todo.com',
     description='Todo',
-    long_description=open("README.md").read()
+    long_description=open("README.md").read(),
     long_description_content_type='text/markdown',
     url="todo",
     py_modules=["fourier_mellin"],

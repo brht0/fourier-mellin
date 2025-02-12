@@ -27,6 +27,6 @@ export CIBW_MUSLLINUX_ARMV7L_IMAGE=""
 
 export CIBW_PLATFORM="linux"
 export CIBW_ARCHS="aarch64 x86_64"
-export CIBW_SKIP="cp36-*"
+export CIBW_SKIP="cp36-* cp36-* *_i686 *-musllinux_* pp*-manylinux_aarch64"
 
 python -m cibuildwheel --output-dir wheelhouse .

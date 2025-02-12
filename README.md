@@ -67,8 +67,9 @@ cmake --build build/release -j 4
 
 ## Todo
 
-- PyPI
-- github actions workflows
+- Register images directly from files
+- Windows/MacOS support
+- Benchmarking
 - Optimization
 - CUDA with OpenCV
 - cv::phaseCorrelate already applies Hanning Window
